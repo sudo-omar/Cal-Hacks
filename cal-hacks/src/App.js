@@ -7,6 +7,8 @@ import About from './components/About';
 import Contact from './components/Contact';
 import LogOfCases from './components/LogOfCases';
 import ReportAndTalk from './components/ReportAndTalk';
+import Appointment from "./components/appointments";
+
 import { Link } from 'react-router-dom';
 import FirstAppointment from './components/FirstAppoitment'
 import SecondAppointment from './components/SecondAppoitment'
@@ -24,9 +26,9 @@ const App = () => {
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/appointments" element={<Appointment />} />
         <Route path="/appointments/1" element={<FirstAppointment />} />
         <Route path="/appointments/2" element={<SecondAppointment />} />
-        <Route path="/appointments/3" element={<ThirdAppointment />} />
         <Route path="/appointments/3" element={<ThirdAppointment />} />
       </Routes>
     </Router>
