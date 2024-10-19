@@ -12,6 +12,8 @@ const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 8% 20px;
+    background-color: white;
+    
 `;
 
 const ContentContainer = styled.div`
@@ -41,20 +43,9 @@ const AppointmentList = styled.div`
 `;
 
 const AppointmentItem = styled.div`
-  background-color: #f0f0f0;
+  background-color: #d9d9d9;
   padding: 20px;
   border-radius: 4px;
-`;
-
-const AppointmentHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const AppointmentTitle = styled.h2`
-  font-size: 18px;
-  margin: 0;
 `;
 
 const TranscribeBox = styled.div`
@@ -83,7 +74,22 @@ const TranscribeButton = styled.button`
 const Option = styled.button`
     background-color: transparent;
     border: none;
+    font-size: 20px;
     color: ${(props) => (props.active ? "purple" : "gray")};
+    position: relative;
+    transition: color 0.2s;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px; /* Adjust as needed */
+        width: ${(props) => (props.active ? "100%" : "0")};
+        height: 2px; /* Adjust as needed */
+        background-color: purple;
+        transition: width 0.2s;
+    }
+
     &:active {
         color: purple;
     }
@@ -98,6 +104,7 @@ const Selection = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    margin-top: 10px;
 `;
 
 const Appointment = () => {
