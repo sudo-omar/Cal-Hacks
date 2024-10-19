@@ -14,9 +14,9 @@ const App = () => {
       <Navbar /> {/* Navbar always displayed */}
       <Routes> {/* Use Routes instead of Switch */}
         <Route path="/" element={<Home />} /> {/* Use element prop instead of component */}
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-
+        <Route path="/log-of-cases" element={<LogOfCases />} />
+        <Route path="/report-and-talk" element={<ReportAndTalk />} />
+      
         {/*health hub aka the main recording page */}
         <Route path="/healthhub" element={<HealthHub />} />
       </Routes>
