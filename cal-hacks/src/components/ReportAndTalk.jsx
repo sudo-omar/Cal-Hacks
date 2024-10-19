@@ -1,7 +1,203 @@
+import React from "react";
+import styled from "styled-components";
+import { Search, Mic } from "lucide-react";
+
+const PageContainer = styled.div`
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+`;
+
+const IconPlaceholder = styled.div`
+  width: 24px;
+  height: 24px;
+  background-color: #000;
+  margin-right: 10px;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  align-items: center;
+`;
+
+const NavButton = styled.button`
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const ProfilePic = styled.div`
+  width: 40px;
+  height: 40px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  margin-left: 10px;
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+const MainColumn = styled.div`
+  flex: 1;
+`;
+
+const Title = styled.h1`
+  font-size: 32px;
+  margin-bottom: 20px;
+`;
+
+const SearchBar = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  width: 34%;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  background: transparent;
+  flex-grow: 1;
+  font-size: 16px;
+  margin-left: 10px;
+`;
+
+const AppointmentAndTranscribeContainer = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
+const AppointmentList = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const AppointmentItem = styled.div`
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 4px;
+`;
+
+const AppointmentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const AppointmentTitle = styled.h2`
+  font-size: 18px;
+  margin: 0;
+`;
+
+const TranscribeBox = styled.div`
+  flex: 0 0 300px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+  height: fit-content;
+  text-align: center;
+`;
+
+const TranscribeButton = styled.button`
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  cursor: pointer;
+`;
+
 const ReportAndTalk = () => {
-    return (
-        <div>reopt</div>
-    )
-}
+  return (
+    <PageContainer>
+      <Header>
+        <Logo>
+          <IconPlaceholder />
+          MedicAI
+        </Logo>
+        <Nav>
+          <NavButton>My Transcripts</NavButton>
+          <ProfilePic />
+        </Nav>
+      </Header>
+
+      <ContentContainer>
+        <MainColumn>
+          <Title>My Transcripts</Title>
+
+          <SearchBar>
+            <Search size={20} />
+            <SearchInput placeholder="Search" />
+          </SearchBar>
+
+          <AppointmentAndTranscribeContainer>
+            <AppointmentList>
+              <AppointmentItem>
+                <AppointmentHeader>
+                  <AppointmentTitle>
+                    Appointment 1 Oct 18, 2024 12:00 PM
+                  </AppointmentTitle>
+                </AppointmentHeader>
+              </AppointmentItem>
+              <AppointmentItem>
+                <AppointmentHeader>
+                  <AppointmentTitle>
+                    Appointment 2 Oct 18, 2024 12:01 PM
+                  </AppointmentTitle>
+                </AppointmentHeader>
+              </AppointmentItem>
+              <AppointmentItem>
+                <AppointmentHeader>
+                  <AppointmentTitle>
+                    Appointment 3 Oct 18, 2024 12:02 PM
+                  </AppointmentTitle>
+                </AppointmentHeader>
+              </AppointmentItem>
+            </AppointmentList>
+
+            <TranscribeBox>
+              <p>
+                Press the button to start transcribing your doctor appointments!
+              </p>
+              <TranscribeButton>
+                <Mic size={24} />
+              </TranscribeButton>
+              <p>Transcribe</p>
+            </TranscribeBox>
+          </AppointmentAndTranscribeContainer>
+        </MainColumn>
+      </ContentContainer>
+    </PageContainer>
+  );
+};
 
 export default ReportAndTalk;
