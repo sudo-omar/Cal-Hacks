@@ -30,20 +30,6 @@ const IconPlaceholder = styled.div`
   margin-right: 10px;
 `;
 
-const Nav = styled.nav`
-  display: flex;
-  align-items: center;
-`;
-
-const NavButton = styled.button`
-  background-color: #f0f0f0;
-  border: none;
-  padding: 8px 16px;
-  margin-left: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
 const ProfilePic = styled.div`
   width: 40px;
   height: 40px;
