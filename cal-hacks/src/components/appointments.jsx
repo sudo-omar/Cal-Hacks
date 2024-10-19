@@ -12,13 +12,13 @@ const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 8% 20px;
-    background-color: white;
-    
+    background-color: #f5f7fa;
 `;
 
 const ContentContainer = styled.div`
   display: flex;
   gap: 20px;
+    color: #333;
 `;
 
 const MainColumn = styled.div`
@@ -43,9 +43,10 @@ const AppointmentList = styled.div`
 `;
 
 const AppointmentItem = styled.div`
-  background-color: #d9d9d9;
+  background-color: white;
   padding: 20px;
   border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const TranscribeBox = styled.div`
