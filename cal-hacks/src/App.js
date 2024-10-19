@@ -7,6 +7,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import LogOfCases from './components/LogOfCases';
 import ReportAndTalk from './components/ReportAndTalk';
+import { Link } from 'react-router-dom';
 import "./App.css";
 
 const App = () => {

@@ -5,15 +5,8 @@ import { useRef } from "react";
 import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk';
 import { initializeApp } from "firebase/app";
-
-/*
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration
-    
-*/
-
+import { getFirestore } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -251,27 +244,61 @@ const ReportAndTalk = () => {
 
           <AppointmentAndTranscribeContainer>
             <AppointmentList>
-              <AppointmentItem>
-                <AppointmentHeader>
-                  <AppointmentTitle>
-                    Appointment 1 Oct 18, 2024 12:00 PM
-                  </AppointmentTitle>
-                </AppointmentHeader>
-              </AppointmentItem>
-              <AppointmentItem>
-                <AppointmentHeader>
-                  <AppointmentTitle>
-                    Appointment 2 Oct 18, 2024 12:01 PM
-                  </AppointmentTitle>
-                </AppointmentHeader>
-              </AppointmentItem>
-              <AppointmentItem>
-                <AppointmentHeader>
-                  <AppointmentTitle>
-                    Appointment 3 Oct 18, 2024 12:02 PM
-                  </AppointmentTitle>
-                </AppointmentHeader>
-              </AppointmentItem>
+                <Link to="/appointments/1">
+                    <AppointmentItem>
+                        <AppointmentHeader>
+                        <AppointmentTitle>
+                            Appointment 1 Oct 18, 2024 12:00 PM
+                        </AppointmentTitle>
+                        </AppointmentHeader>
+                        <p>
+                            Emily Davis is a patient who presented on 10/19/2024 with complaints of abdominal pain and nausea. 
+                            She reports experiencing intermittent abdominal pain for the past week, particularly in the lower 
+                            right quadrant, along with nausea and occasional vomiting. Her medical history includes an 
+                            appendectomy, and she takes over-the-counter antacids as needed. Emily has an allergy to shellfish. 
+                            On examination, her abdomen was tender in the right lower quadrant, but her vital signs were stable 
+                            with no signs of acute distress.
+                        </p>
+                    </AppointmentItem>
+                </Link>
+
+                <Link to="/appointments/2">
+                    <AppointmentItem>
+                        <AppointmentHeader>
+                        <AppointmentTitle>
+                            Appointment 2 Oct 20, 2024 12:00 PM
+                        </AppointmentTitle>
+                        </AppointmentHeader>
+                        <p>
+                            Michael Johnson is a patient who presented on 10/19/2024 with a chief complaint of persistent 
+                            cough and fatigue. He reports having a cough for the past month, accompanied by increasing 
+                            fatigue and occasional fever, with symptoms worsening at night. Michael has no significant 
+                            past medical history and is not currently taking any prescribed medications. He has no known 
+                            allergies. During the physical examination, his vital signs were stable, though mild wheezing 
+                            was noted upon auscultation. 
+                        </p>
+                    </AppointmentItem>
+                </Link>
+
+                <Link to="appointments/2">
+                    <AppointmentItem>
+                        <AppointmentHeader>
+                        <AppointmentTitle>
+                            Appointment 3 Oct 18, 2024 12:02 PM
+                        </AppointmentTitle>
+                        </AppointmentHeader>
+                        <p>
+                            Jane Smith presented on October 19, 2024, with complaints of severe headaches and dizziness occurring 
+                            daily for the past two weeks. She also reported occasional blurred vision, with symptoms exacerbated 
+                            by bright lights and loud sounds. Her past medical history includes hypertension and mild asthma. 
+                            Current medications include Lisinopril 10 mg daily and an Albuterol inhaler as needed. The patient 
+                            has a known allergy to penicillin. During the physical examination, her neurological assessment was normal, 
+                            with vital signs showing a blood pressure of 140/90 mmHg, a pulse of 78 bpm, and respirations at 16/min.
+                            She exhibited no signs of distress, and both vision and hearing exams were normal. The review of systems 
+                            indicated no cardiovascular issues, respiratory complaints, or gastrointestinal symptoms. 
+                        </p>
+                    </AppointmentItem>
+                </Link>
             </AppointmentList>
 
             <TranscribeBox>
