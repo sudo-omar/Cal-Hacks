@@ -1,55 +1,78 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk';
+
 
 const HealthHub = () => {
-    const [isRecording, setIsRecording] = useState(false);
-    const [audioURL, setAudioURL] = useState(null);
-    const mediaRecorderRef = useRef(null);
-    const audioChunksRef = useRef([]);
+  const mediaRecorderRef = useRef(null);
+  const [recording, setRecording] = useState(false); // Recording state
+  const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953'); 
 
-    const startRecording = async () => {
-        // Request permission to use the microphone
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream);
+  const startRecording = async () => {
+    try {
+      // Get audio stream from user's microphone
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
 
-        mediaRecorderRef.current.ondataavailable = (event) => {
-            audioChunksRef.current.push(event.data);
-        };
+      // Create a live transcription connection
+      const connection = deepgram.listen.live({
+        model: 'nova-2',
+        language: 'en-US',
+        smart_format: true,
+      });
 
-        mediaRecorderRef.current.onstop = () => {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-            const url = URL.createObjectURL(audioBlob);
-            setAudioURL(url);
-            audioChunksRef.current = []; // Clear the chunks for the next recording
-        };
+      // Listen for transcription events
+      connection.on(LiveTranscriptionEvents.Open, () => {
+        console.log('Connection opened');
 
-        mediaRecorderRef.current.start();
-        setIsRecording(true);
-    };
+        connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+          console.log(data.channel.alternatives[0].transcript);
+        });
 
-    const stopRecording = () => {
-        mediaRecorderRef.current.stop();
-        setIsRecording(false);
-    };
+        connection.on(LiveTranscriptionEvents.Error, (err) => {
+          console.error(err);
+        });
+      });
 
-    return (
-        <div>
-            <h1>Health Hub</h1>
-            <div>
-                {isRecording ? (
-                    <button onClick={stopRecording}>Stop Recording</button>
-                ) : (
-                    <button onClick={startRecording}>Start Recording</button>
-                )}
-            </div>
-            {audioURL && (
-                <div>
-                    <h2>Recorded Audio:</h2>
-                    <audio controls src={audioURL}></audio>
-                    <a href={audioURL} download="recording.wav">Download Audio</a>
-                </div>
-            )}
-        </div>
-    );
+      // When data is available, send it to Deepgram
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          connection.send(event.data); // Send the audio data
+        }
+      };
+        
+      // Start recording
+      mediaRecorderRef.current.start(250); // Send audio every 250 ms
+      setRecording(true); // Update state to indicate recording has started
+    } catch (error) {
+      console.error('Error accessing microphone or Deepgram connection:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop(); // Stop the recording
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop()); // Stop all audio tracks
+      setRecording(false); // Update state to indicate recording has stopped
+    }
+  };
+
+  const toggleRecording = () => {
+    if (recording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  return (
+    <div>
+        <h1>My Transcriptions</h1>
+
+      <button onClick={toggleRecording}>
+        {recording ? 'Stop Recording' : 'Start Recording'}
+      </button>
+    </div>
+  );
 };
 
 export default HealthHub;
