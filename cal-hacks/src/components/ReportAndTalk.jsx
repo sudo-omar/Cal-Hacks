@@ -105,6 +105,7 @@ const ReportAndTalk = () => {
   const [recording, setRecording] = useState(false); // Recording state
   const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
   const [fulltranscript, setFullTranscript] = useState("");
+  const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false)
 
   const firebaseConfig = {
     apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
@@ -120,6 +121,7 @@ const ReportAndTalk = () => {
   const db = getFirestore(app);
 
   const startRecording = async () => {
+    setIsSendingDataToGemi(false);
     try {
       // Get audio stream from user's microphone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -175,6 +177,10 @@ const ReportAndTalk = () => {
       setRecording(false); // Update state to indicate recording has stopped
     }
     Gemini(fulltranscript);
+
+    //clear the text and start a lodaing icno, say sending to gemini
+    setFullTranscript("");
+    setIsSendingDataToGemi(true);
   };
 
   const toggleRecording = () => {
@@ -229,9 +235,6 @@ const ReportAndTalk = () => {
                         </ul>
                     </AppointmentItem>
                    
-
-                
-
                     <AppointmentItem>
                         <Link to="appointments/3">
                         <AppointmentHeader>
@@ -254,7 +257,9 @@ const ReportAndTalk = () => {
               <p>
                 Press the button to start transcribing your doctor appointments!
               </p>
-              {fulltranscript}
+
+
+              {!isSendingDataToGemi ? fulltranscript : <p>loading</p>}
 
               <TranscribeButton onClick={toggleRecording}>
                 <Mic size={24} />
