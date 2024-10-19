@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Ch
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
-import Contact from './components/Contact'; 
-import HealthHub from './components/HealthHub'
+import Contact from './components/Contact';
+import HealthHub from './components/HealthHub';
+import LogOfCases from './components/LogOfCases';
+import ReportAndTalk from './components/ReportAndTalk';
 import "./App.css";
 
 const App = () => {
@@ -16,7 +18,7 @@ const App = () => {
         <Route path="/" element={<Home />} /> {/* Use element prop instead of component */}
         <Route path="/log-of-cases" element={<LogOfCases />} />
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
-      
+
         {/*health hub aka the main recording page */}
         <Route path="/healthhub" element={<HealthHub />} />
       </Routes>
