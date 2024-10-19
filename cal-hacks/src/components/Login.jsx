@@ -2,41 +2,82 @@ import React from "react";
 import styled from "styled-components";
 import { Eye } from "lucide-react";
 
+const PageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+`;
+
 const LoginContainer = styled.div`
   font-family: Arial, sans-serif;
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
+  padding: 40px 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 `;
 
 const Title = styled.h1`
+  color: #a784d9;
   font-size: 24px;
-  margin-bottom: 20px;
+  font-weight: bold;
+  margin: 0;
 `;
 
 const Link = styled.a`
-  color: #2c7a7b;
+  color: #a784d9;
   text-decoration: underline;
   cursor: pointer;
 `;
 
+const InputContainer = styled.div`
+  position: relative;
+  margin-bottom: 16px;
+`;
+
 const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
+  width: 93.5%;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px;
+`;
+
+const PasswordToggle = styled.button`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
 `;
 
 const Button = styled.button`
   width: 100%;
-  padding: 10px;
-  background-color: #2c7a7b;
+  padding: 12px;
+  background-color: #a784d9;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  margin-bottom: 16px;
+`;
+
+const CantSignIn = styled.div`
+  text-align: center;
+  margin-bottom: 16px;
 `;
 
 const SocialButton = styled(Button)`
@@ -45,59 +86,47 @@ const SocialButton = styled(Button)`
   border: 1px solid #ccc;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 12px;
 `;
 
 const IconWrapper = styled.span`
-  margin-right: 10px;
-`;
-
-const Footer = styled.footer`
-  font-size: 12px;
-  color: #666;
-  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const Login = () => {
   return (
-    <LoginContainer>
-      <Title>Sign in</Title>
-      <Link style={{ float: "right" }}>I don't have an account</Link>
-      <Input
-        type="email"
-        placeholder="Email"
-        defaultValue="randomemail@gmail.com"
-      />
-      <Input type="password" placeholder="Password" />
-      <Button>Sign in</Button>
-      <Link>Can't sign in?</Link>
-      <SocialButton>
-        <IconWrapper>
-          <img src="/api/placeholder/20/20" alt="Google icon" />
-        </IconWrapper>
-        Sign in with Google
-      </SocialButton>
-      <SocialButton>
-        <IconWrapper>
-          <img src="/api/placeholder/20/20" alt="Facebook icon" />
-        </IconWrapper>
-        Sign in with Facebook
-      </SocialButton>
-      <SocialButton>
-        <IconWrapper>
-          <img src="/api/placeholder/20/20" alt="Apple icon" />
-        </IconWrapper>
-        Sign in with Apple
-      </SocialButton>
-      <Footer>
-        This site is protected by reCAPTCHA and the Google{" "}
-        <Link>Privacy Policy</Link> and <Link>Terms of Service</Link> apply.
-        <br />
-        <Link>Terms and Conditions</Link> · <Link>Privacy Policy</Link> ·{" "}
-        <Link>CA Privacy Notice</Link>
-      </Footer>
-    </LoginContainer>
+    <PageContainer>
+      <LoginContainer>
+        <Header>
+          <Title>Sign in</Title>
+          <Link>I don't have an account</Link>
+        </Header>
+        <InputContainer>
+          <Input type="email" placeholder="Email" defaultValue="" />
+        </InputContainer>
+        <InputContainer>
+          <Input type="password" placeholder="Password" />
+          <PasswordToggle>
+            <Eye size={20} color="#666" />
+          </PasswordToggle>
+        </InputContainer>
+        <Button>Sign in</Button>
+        <CantSignIn>
+          <Link>Can't sign in?</Link>
+        </CantSignIn>
+        <SocialButton>
+          <IconWrapper>
+            <img src="/api/placeholder/20/20" alt="Google icon" />
+            Sign in with Google
+          </IconWrapper>
+          &gt;
+        </SocialButton>
+      </LoginContainer>
+    </PageContainer>
   );
 };
 
