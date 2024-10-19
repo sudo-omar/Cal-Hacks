@@ -10,6 +10,8 @@ import About from './components/About';
 import Contact from './components/Contact';
 import LogOfCases from './components/LogOfCases';
 import ReportAndTalk from './components/ReportAndTalk';
+import Appointment from "./components/appointments";
+
 import { Link } from 'react-router-dom';
 import "./App.css";
 
@@ -27,6 +29,7 @@ const App = () => {
         <Route path="/healthhub" element={<HealthHub />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/appointments" element={<Appointment />} />
       </Routes>
     </Router>
 
