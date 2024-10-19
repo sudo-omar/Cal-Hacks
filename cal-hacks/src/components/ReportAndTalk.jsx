@@ -1,6 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { Search, Mic } from "lucide-react";
+import { useRef } from "react";
+import { useState } from "react";
+import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk';
+
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -137,6 +141,67 @@ const TranscribeButton = styled.button`
 `;
 
 const ReportAndTalk = () => {
+
+    const mediaRecorderRef = useRef(null);
+    const [recording, setRecording] = useState(false); // Recording state
+    const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953'); 
+
+    const startRecording = async () => {
+        try {
+        // Get audio stream from user's microphone
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+
+        // Create a live transcription connection
+        const connection = deepgram.listen.live({
+            model: 'nova-2',
+            language: 'en-US',
+            smart_format: true,
+        });
+
+        // Listen for transcription events
+        connection.on(LiveTranscriptionEvents.Open, () => {
+            console.log('Connection opened');
+
+            connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+            console.log(data.channel.alternatives[0].transcript);
+            });
+
+            connection.on(LiveTranscriptionEvents.Error, (err) => {
+            console.error(err);
+            });
+        });
+
+        // When data is available, send it to Deepgram
+        mediaRecorderRef.current.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+            connection.send(event.data); // Send the audio data
+            }
+        };
+            
+        // Start recording
+        mediaRecorderRef.current.start(250); // Send audio every 250 ms
+        setRecording(true); // Update state to indicate recording has started
+        } catch (error) {
+        console.error('Error accessing microphone or Deepgram connection:', error);
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop(); // Stop the recording
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop()); // Stop all audio tracks
+        setRecording(false); // Update state to indicate recording has stopped
+        }
+    };
+
+    const toggleRecording = () => {
+        if (recording) {
+        stopRecording();
+        } else {
+        startRecording();
+        }
+    };
   return (
     <PageContainer>
       <Header>
@@ -188,9 +253,11 @@ const ReportAndTalk = () => {
               <p>
                 Press the button to start transcribing your doctor appointments!
               </p>
-              <TranscribeButton>
-                <Mic size={24} />
-              </TranscribeButton>
+             
+                <TranscribeButton onClick={toggleRecording}>
+                    <Mic size={24} />
+                </TranscribeButton>
+            
               <p>Transcribe</p>
             </TranscribeBox>
           </AppointmentAndTranscribeContainer>
