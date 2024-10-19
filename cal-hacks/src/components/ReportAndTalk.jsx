@@ -145,6 +145,7 @@ const ReportAndTalk = () => {
     const mediaRecorderRef = useRef(null);
     const [recording, setRecording] = useState(false); // Recording state
     const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953'); 
+    const [fulltranscript, setFullTranscript] = useState("");
 
     const startRecording = async () => {
         try {
@@ -164,8 +165,10 @@ const ReportAndTalk = () => {
             console.log('Connection opened');
 
             connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-            console.log(data.channel.alternatives[0].transcript);
+                const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
+                setFullTranscript(prevTranscript => prevTranscript + " " + newTranscript);
             });
+            console.log(fulltranscript);
 
             connection.on(LiveTranscriptionEvents.Error, (err) => {
             console.error(err);
@@ -253,6 +256,7 @@ const ReportAndTalk = () => {
               <p>
                 Press the button to start transcribing your doctor appointments!
               </p>
+                {fulltranscript}
              
                 <TranscribeButton onClick={toggleRecording}>
                     <Mic size={24} />
