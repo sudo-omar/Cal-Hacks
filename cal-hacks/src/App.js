@@ -18,6 +18,8 @@ const App = () => {
         <Route path="/" element={<Home />} /> {/* Use element prop instead of component */}
         <Route path="/log-of-cases" element={<LogOfCases />} />
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/*health hub aka the main recording page */}
         <Route path="/healthhub" element={<HealthHub />} />
