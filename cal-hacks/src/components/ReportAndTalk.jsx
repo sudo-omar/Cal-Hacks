@@ -4,6 +4,15 @@ import { Search, Mic } from "lucide-react";
 import { useRef } from "react";
 import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk';
+import { initializeApp } from "firebase/app";
+
+/*
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    
+*/
 
 
 const PageContainer = styled.div`
@@ -146,6 +155,19 @@ const ReportAndTalk = () => {
     const [recording, setRecording] = useState(false); // Recording state
     const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953'); 
     const [fulltranscript, setFullTranscript] = useState("");
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
+        authDomain: "medicai-2ab57.firebaseapp.com",
+        projectId: "medicai-2ab57",
+        storageBucket: "medicai-2ab57.appspot.com",
+        messagingSenderId: "1010875331468",
+        appId: "1:1010875331468:web:bed2564ccd919dd72edca9"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     const startRecording = async () => {
         try {
