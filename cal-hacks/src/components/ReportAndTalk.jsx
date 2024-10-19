@@ -244,6 +244,7 @@ const ReportAndTalk = () => {
                             <li>Reason for Appointment: Severe Headaches</li>
                         </ul>
                     </AppointmentItem>
+                
             </AppointmentList>
 
             <TranscribeBox>
