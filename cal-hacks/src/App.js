@@ -8,6 +8,10 @@ import Contact from './components/Contact';
 import LogOfCases from './components/LogOfCases';
 import ReportAndTalk from './components/ReportAndTalk';
 import { Link } from 'react-router-dom';
+import FirstAppointment from './components/FirstAppoitment'
+import SecondAppointment from './components/SecondAppoitment'
+import ThirdAppointment from './components/ThirdAppoitment'
+
 import "./App.css";
 
 const App = () => {
@@ -20,7 +24,9 @@ const App = () => {
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-
+        <Route path="/appointments/1" element={<FirstAppointment />} />
+        <Route path="/appointments/2" element={<SecondAppointment />} />
+        <Route path="/appointments/3" element={<ThirdAppointment />} />
       </Routes>
     </Router>
 

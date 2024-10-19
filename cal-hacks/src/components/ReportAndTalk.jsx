@@ -7,6 +7,7 @@ import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import Gemini from "./Gemini";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -184,7 +185,6 @@ const ReportAndTalk = () => {
             (prevTranscript) => prevTranscript + " " + newTranscript
           );
         });
-        console.log(fulltranscript);
 
         connection.on(LiveTranscriptionEvents.Error, (err) => {
           console.error(err);
@@ -217,6 +217,7 @@ const ReportAndTalk = () => {
         .forEach((track) => track.stop()); // Stop all audio tracks
       setRecording(false); // Update state to indicate recording has stopped
     }
+    Gemini(fulltranscript);
   };
 
   const toggleRecording = () => {
@@ -286,7 +287,7 @@ const ReportAndTalk = () => {
                     </AppointmentItem>
                 </Link>
 
-                <Link to="appointments/2">
+                <Link to="appointments/3">
                     <AppointmentItem>
                         <AppointmentHeader>
                         <AppointmentTitle>
