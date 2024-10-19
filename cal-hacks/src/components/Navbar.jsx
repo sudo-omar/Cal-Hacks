@@ -8,9 +8,9 @@ const Container = styled.div`
     justify-content: space-between;
     align-items: center;
     overflow-x: hidden;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(5px);
     position: fixed;
-    background-color: #FFFFFF;
+    background-color: transparent;
     z-index: 100;
 `;
 
@@ -72,7 +72,7 @@ const Navbar = () => {
                 <MenuOption>About</MenuOption>
                 <MenuOption>Contact</MenuOption>
                 <MenuOption onClick={() => {window.location.replace("/report-and-talk")}}>Login</MenuOption>
-                <SignUpButton onClick={() => {window.location.replace("/log-of-cases")}}>Sign Up</SignUpButton>
+                <SignUpButton onClick={() => {window.location.replace("")}}>Sign Up</SignUpButton>
             </RightNav>
         </Container>
     )

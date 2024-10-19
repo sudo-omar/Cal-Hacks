@@ -49,26 +49,32 @@ const AppointmentItem = styled.div`
 `;
 
 const TranscribeBox = styled.div`
-  flex: 0 0 300px;
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 20px;
-  height: fit-content;
-  text-align: center;
+    flex: 0 0 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const TranscribeButton = styled.button`
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px auto;
-  cursor: pointer;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #3a7bd5;
+    }
 `;
 
 const Option = styled.button`

@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 import Contact from './components/Contact';
-import LogOfCases from './components/LogOfCases';
 import ReportAndTalk from './components/ReportAndTalk';
 import Appointment from "./components/appointments";
 
@@ -22,7 +21,6 @@ const App = () => {
       <Navbar /> {/* Navbar always displayed */}
       <Routes> {/* Use Routes instead of Switch */}
         <Route path="/" element={<Home />} /> {/* Use element prop instead of component */}
-        <Route path="/log-of-cases" element={<LogOfCases />} />
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
