@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Ch
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
-import Contact from './components/Contact'; 
-import HealthHub from './components/HealthHub'
+import Contact from './components/Contact';
+import LogOfCases from './components/LogOfCases';
+import ReportAndTalk from './components/ReportAndTalk';
 import "./App.css";
 
 const App = () => {
@@ -14,11 +15,11 @@ const App = () => {
       <Navbar /> {/* Navbar always displayed */}
       <Routes> {/* Use Routes instead of Switch */}
         <Route path="/" element={<Home />} /> {/* Use element prop instead of component */}
+        <Route path="/log-of-cases" element={<LogOfCases />} />
+        <Route path="/report-and-talk" element={<ReportAndTalk />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/*health hub aka the main recording page */}
-        <Route path="/healthhub" element={<HealthHub />} />
       </Routes>
     </Router>
 

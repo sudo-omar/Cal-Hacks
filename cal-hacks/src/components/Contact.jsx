@@ -1,7 +1,7 @@
 const Contact = () => {
     return (
-        <div>
-
+        <div>   
+            contact dead link
         </div>
     )
 }
