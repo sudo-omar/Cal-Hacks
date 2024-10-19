@@ -1,33 +1,47 @@
-import { GoogleGenerativeAI } from 'google-generative-ai';
+import { GoogleGenerativeAI } from "@google/generative-ai"
+
 
 // Define your function here
-require('dotenv').config();
-const apiKey = process.env.API_KEY;
-const param = "Let's go over your resent blood test results. Your cholesterol levels are higher than we would like to see. We will need to make some changes to your diet and exercise routine. I will also be prescribing you a medication to help lower your cholesterol. I will see you back in 3 months to check your levels again. If you have any questions, please don't hesitate to ask.";
+const apiKey = 'AIzaSyANTwQaXVS9TM6FQL9H6Z_c1Uk0qsZFgZQ';
+const genAI = new GoogleGenerativeAI(apiKey);
 
 export const Gemini = (param) => {
   // Your function logic
-  const genAI = new GoogleGenerativeAI({apiKey});
-  const model = genAI.getGenerativeMode({ model: 'gemini-pro' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
-  const format = {
-    "general_summary": "",
-    "definitions": [],
-    "prescriptions": []
-  }
+//   const format = {
+//     "general_summary": "",
+//     "definitions": [],
+//     "prescriptions": []
+//   }
 
-  const prompt = "You are a medical professional reviewing the transcription of a recent appointment with a patient." +
-  " The transcription is as follows: " + param + " Please provide a structured summary based on this json format: " +
-  JSON.stringify(format) + " The summary should include a general summary of the transcription, definitions of any medical terms, and any prescriptions that were given to the patient.";
+//   const prompt = "You are a medical professional reviewing the transcription of a recent appointment with a patient." +
+//   " The transcription is as follows: " + param + " The summary should include a general summary of the transcription, definitions of any medical terms, and any prescriptions that were given to the patient. Please provide a structured summary based on this json format inputed";
   
+const input = {
+    transcription: param, // The patient's transcription
+    format: {
+      "general_summary": "",
+      "definitions": [],
+      "prescriptions": []
+    },
+    instructions: "You are a medical professional reviewing the transcription of a recent appointment with a patient. Please provide a structured summary based on the provided format."
+  };
+
+// console.log("prompt:" + prompt)
+
   async function createSummary() {
     try {
-      const result = await model.generateContent({ prompt });
+
+    // console.log("prompt:" + prompt)
+        
+      const result = await model.generateContent(input);
       const response = await result.response();
+      console.log(result)
       const text = response.text();
+      console.log("this is resutl: " + text);
       return text;
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
     }
   }
