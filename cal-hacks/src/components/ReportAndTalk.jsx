@@ -228,13 +228,12 @@ const ReportAndTalk = () => {
                             <li>Reason for Appointment: Persistent Cough</li>
                         </ul>
                     </AppointmentItem>
+                   
 
-                </Link>
-
-                <Link to="appointments/3">
+                
 
                     <AppointmentItem>
-                        <Link to="/appointments/3">
+                        <Link to="appointments/3">
                         <AppointmentHeader>
                             <AppointmentTitle>
                             Appointment 3
@@ -248,6 +247,7 @@ const ReportAndTalk = () => {
                             <li>Reason for Appointment: Severe Headaches</li>
                         </ul>
                     </AppointmentItem>
+                
             </AppointmentList>
 
             <TranscribeBox>
