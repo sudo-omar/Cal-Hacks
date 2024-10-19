@@ -35,7 +35,7 @@ const SearchBar = styled.div`
   align-items: center;
   background-color: #f0f0f0;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 25px;
   margin-bottom: 20px;
   width: 34%;
 `;
@@ -46,6 +46,7 @@ const SearchInput = styled.input`
   flex-grow: 1;
   font-size: 16px;
   margin-left: 10px;
+    outline: none;
 `;
 
 const AppointmentAndTranscribeContainer = styled.div`
@@ -197,14 +198,14 @@ const ReportAndTalk = () => {
           <Title>My Transcripts</Title>
 
           <SearchBar>
-            <Search size={20} />
+            <Search size={20}/>
             <SearchInput placeholder="Search" />
           </SearchBar>
 
           <AppointmentAndTranscribeContainer>
             <AppointmentList>
                     <AppointmentItem>
-                        <Link to="/appointments/1">
+                        <Link to="/appointments">
                         <AppointmentHeader>
 
                         <AppointmentTitle>
@@ -220,7 +221,7 @@ const ReportAndTalk = () => {
                         </ul>
                     </AppointmentItem>
                     <AppointmentItem>
-                        <Link to="/appointments/2">
+                        <Link to="/appointments">
                         <AppointmentHeader>
                             <AppointmentTitle>
                             Appointment 2
@@ -234,9 +235,9 @@ const ReportAndTalk = () => {
                             <li>Reason for Appointment: Persistent Cough</li>
                         </ul>
                     </AppointmentItem>
-                   
+
                     <AppointmentItem>
-                        <Link to="appointments/3">
+                        <Link to="/appointments">
                         <AppointmentHeader>
                             <AppointmentTitle>
                             Appointment 3
