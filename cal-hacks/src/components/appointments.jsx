@@ -237,6 +237,7 @@ useEffect(() => {
             if (docSnap.exists()) {
                 console.log("Document snapshot exists");
                 const geminiResult = docSnap.data().geminiResult; // Get the geminiResult directly
+                setAppointmentData(docSnap.data()); // Set the appointment data
 
                 if (typeof geminiResult === 'string') {
                     // Only parse if it's a string
@@ -259,6 +260,7 @@ useEffect(() => {
             } else {
                 console.log("No such document!");
             }
+            console.log("Document data:", docSnap.data());
         } catch (error) {
             console.error("Error fetching document:", error);
         }
@@ -391,9 +393,6 @@ useEffect(() => {
                                 <p>{appointmentData?.geminiResult.summary || "N/A"}</p>
                                 <p></p>
 
-                                <h3>Definitions:</h3>
-                                <p>{appointmentData?.geminiResult.definitions || "N/A"}</p>
-                                <p></p>
 
                                 <h3>Prescriptions:</h3>
                                 <p>{appointmentData?.geminiResult.prescriptions || "N/A"}</p>

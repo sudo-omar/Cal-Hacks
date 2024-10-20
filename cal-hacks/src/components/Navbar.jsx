@@ -100,7 +100,7 @@ const Navbar = () => {
             window.location.replace("/report-and-talk");
           }}
         >
-          My Transcripts
+          Transcripts
         </MenuOption>
         <MenuOption
           onClick={() => {
