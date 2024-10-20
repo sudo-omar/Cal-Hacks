@@ -3,7 +3,6 @@ import SpeechAI from "./SpeechAI";
 const FirstAppoitment = () => {
     return (
         <div>
-            <SpeechAI />
         </div>
     )
 }

@@ -4,47 +4,41 @@ import styled from "styled-components";
 import { Activity, Lock, Smartphone } from "lucide-react";
 
 export default function Home() {
-  return (
-    <Container>
-      <Content>
-        <LeftNav>
-          <h1>MedicAI</h1>
-          <Tagline>Your AI-powered health companion</Tagline>
-          <FeatureBox>
-            <FeatureIcon>
-              <Activity size={24} />
-            </FeatureIcon>
-            <FeatureInfo>
-              <h3>AI-Driven Insights</h3>
-              <p>Get personalized health recommendations based on your data.</p>
-            </FeatureInfo>
-          </FeatureBox>
-          <FeatureBox>
-            <FeatureIcon>
-              <Lock size={24} />
-            </FeatureIcon>
-            <FeatureInfo>
-              <h3>Secure Data Storage</h3>
-              <p>Your health information is encrypted and protected.</p>
-            </FeatureInfo>
-          </FeatureBox>
-          <FeatureBox>
-            <FeatureIcon>
-              <Smartphone size={24} />
-            </FeatureIcon>
-            <FeatureInfo>
-              <h3>Cross-Platform Sync</h3>
-              <p>Access your data on any device, anytime.</p>
-            </FeatureInfo>
-          </FeatureBox>
-          <CTAButton>Start Your Health Journey</CTAButton>
-        </LeftNav>
-        <RightNav>
-          <Spline scene="https://prod.spline.design/AqhHEmAGLPDY4H1s/scene.splinecode" />
-        </RightNav>
-      </Content>
-    </Container>
-  );
+    return (
+        <Container>
+            <Content>
+                <LeftNav>
+                    <h1>MedicAI</h1>
+                    <Tagline>Your AI-powered health companion</Tagline>
+                    <FeatureBox>
+                        <FeatureIcon><Activity size={24} /></FeatureIcon>
+                        <FeatureInfo>
+                            <h3>AI-Driven Insights</h3>
+                            <p>Get personalized health recommendations based on your data.</p>
+                        </FeatureInfo>
+                    </FeatureBox>
+                    <FeatureBox>
+                        <FeatureIcon><Lock size={24} /></FeatureIcon>
+                        <FeatureInfo>
+                            <h3>Secure Data Storage</h3>
+                            <p>Your health information is encrypted and protected.</p>
+                        </FeatureInfo>
+                    </FeatureBox>
+                    <FeatureBox>
+                        <FeatureIcon><Smartphone size={24} /></FeatureIcon>
+                        <FeatureInfo>
+                            <h3>Cross-Platform Sync</h3>
+                            <p>Access your data on any device, anytime.</p>
+                        </FeatureInfo>
+                    </FeatureBox>
+                    <CTAButton onClick={() => {window.location.replace("/login")}}>Start Your Health Journey</CTAButton>
+                </LeftNav>
+                <RightNav>
+                    <Spline scene="https://prod.spline.design/AqhHEmAGLPDY4H1s/scene.splinecode"/>
+                </RightNav>
+            </Content>
+        </Container>
+    );
 }
 
 const Container = styled.div`

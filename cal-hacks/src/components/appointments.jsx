@@ -4,9 +4,14 @@ import { Mic } from "lucide-react";
 import { useRef } from "react";
 import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import SpeechAI from "./SpeechAI";
+
 import { db } from "./firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
+
 
 
 const PageContainer = styled.div`
@@ -122,6 +127,9 @@ const Selection = styled.div`
 `;
 
 const Appointment = () => {
+
+    const [transcript, setTranscript] = useState(false);
+    const [summary, setSummary] = useState(true);
     const mediaRecorderRef = useRef(null);
     const [recording, setRecording] = useState(false); // Recording state
     const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
@@ -131,6 +139,7 @@ const Appointment = () => {
     const [transcriptText, setTranscriptText] = useState("");
     const [activeTab, setActiveTab] = useState("summary");
     const [appointmentData, setAppointmentData] = useState(null);
+
 
 
     console.log("ID from params:", id);
@@ -414,18 +423,14 @@ useEffect(() => {
                 
 
                 <TranscribeBox>
-                    <p>Press the button to start transcribing your doctor appointments!</p>
-                    {fulltranscript}
-                    <TranscribeButton onClick={toggleRecording}>
-                        <Mic size={24} />
-                    </TranscribeButton>
-                    <p>Transcribe</p>
+                  <p>Press the button to start transcribing your doctor appointments!</p>
+                  <SpeechAI/>
                 </TranscribeBox>
+
             </AppointmentAndTranscribeContainer>
         </MainColumn>
     </ContentContainer>
 </PageContainer>
-
     );
 };
 
