@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 //firestore functions
 import { getFirestore } from "firebase/firestore";
-
+import { initializeApp } from 'firebase/app';
 const firebaseConfig = {
   apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
   authDomain: "medicai-2ab57.firebaseapp.com",
@@ -29,20 +29,18 @@ export const Gemini = (param) => {
     'The summary should include a general summary of the transcription, definitions of any medical terms, ' +
     'and any prescriptions that were given to the patient. Here is the transcription: ' +
     param +
-    " Please provide the information in the following format: {main_complaint: '', general_summary: '', definitions: [], prescriptions: []}";
+    " Please provide the information in the following format and place <strong> </strong> around the titles. Heres an example: <strong>General Summary:</strong> The patient is a 45 year...";
 
   async function createSummary() {
     try {
-      console.log('prompt:' + prompt);
+      
 
       const result = await model.generateContent(prompt);
-      console.log(result.response.text());
       return result.response.text();
     } catch (error) {
       console.error(error);
     }
   }
-
   return createSummary();
 };
 

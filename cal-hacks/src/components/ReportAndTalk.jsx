@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Search, Mic } from "lucide-react";
 import { useRef } from "react";
@@ -8,6 +8,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Gemini from "./Gemini";
+import { addDoc, collection, getDocs, doc, getDoc } from "firebase/firestore";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -107,6 +108,39 @@ const ReportAndTalk = () => {
   const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
   const [fulltranscript, setFullTranscript] = useState("");
   const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false)
+  const [appointments, setAppointments] = useState([]);
+
+    useEffect(() => {
+        fetchAppointments();
+    }, []);
+
+    const fetchAppointments = async () => {
+        const ids = await fetchDocumentIds();
+        // Now fetch the appointments using the retrieved IDs
+        if (ids.length > 0) {
+            const fetchPromises = ids.map(async (id) => {
+                const docRef = doc(db, "record_history", id);
+                const docSnap = await getDoc(docRef);
+                return docSnap.exists() ? { id, ...docSnap.data() } : null;
+            });
+
+            const fetchedAppointments = await Promise.all(fetchPromises);
+            setAppointments(fetchedAppointments.filter(app => app));
+        }
+    };
+
+   
+
+    const fetchDocumentIds = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "record_history")); // Your collection name
+            const ids = querySnapshot.docs.map(doc => doc.id); // Extracting document IDs
+            return ids; // Return the array of IDs
+        } catch (error) {
+            console.error("Error fetching document IDs:", error);
+            return []; // Return an empty array on error
+        }
+    };
 
   const firebaseConfig = {
     apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
@@ -169,7 +203,7 @@ const ReportAndTalk = () => {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async() => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop(); // Stop the recording
       mediaRecorderRef.current.stream
@@ -177,11 +211,23 @@ const ReportAndTalk = () => {
         .forEach((track) => track.stop()); // Stop all audio tracks
       setRecording(false); // Update state to indicate recording has stopped
     }
-    Gemini(fulltranscript);
+    const gemini_response = await Gemini(fulltranscript);
+    console.log("gemi response: " + gemini_response);
+    await addDoc(collection(db, "record_history"), {
+        transcript: fulltranscript,
+        geminiResult: gemini_response, // Ensure this is the correct response
+        timestamp: new Date(),
+    });
+
+    //send transcript to firebase, get that documents id, throw it into the url.
+
+    
 
     //clear the text and start a lodaing icno, say sending to gemini
     setFullTranscript("");
     setIsSendingDataToGemi(true);
+    fetchAppointments();
+
   };
 
   const toggleRecording = () => {
@@ -204,22 +250,25 @@ const ReportAndTalk = () => {
 
           <AppointmentAndTranscribeContainer>
             <AppointmentList>
-                    <AppointmentItem>
-                        <Link to="/appointments">
-                        <AppointmentHeader>
-
-                        <AppointmentTitle>
-                            Appointment 1
-                        </AppointmentTitle>
-                        </AppointmentHeader>
-                        </Link>
-                        <ul>
-                            <li>Date: Jan 18, 2024</li>
-                            <li>Time: 12:00 PM</li>
-                            <li>Location: UCLA Hospital</li>
-                            <li>Reason for Appointment: Abdominal Pain</li>
-                        </ul>
-                    </AppointmentItem>
+                        { appointments.map((appointment) => (
+                            <AppointmentItem key={appointment.id}>
+                                <Link to={`/appointments/${appointment.id}`}>
+                                    <AppointmentHeader>
+                                        <AppointmentTitle>
+                                            {appointment.title || "Appointment"} 
+                                        </AppointmentTitle>
+                                    </AppointmentHeader>
+                                </Link>
+                                <ul>
+                                    <li>Date: {appointment.date || "N/A"}</li>
+                                    <li>Time: {appointment.time || "N/A"}</li>
+                                    <li>Location: {appointment.location || "N/A"}</li>
+                                    <li>Reason for Appointment: {appointment.reason || "N/A"}</li>
+                                </ul>
+                             </AppointmentItem>
+                        )) }
+                    
+                        
                     <AppointmentItem>
                         <Link to="/appointments">
                         <AppointmentHeader>

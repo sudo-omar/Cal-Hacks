@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Mic } from "lucide-react";
 import { useRef } from "react";
@@ -6,6 +6,8 @@ import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -112,17 +114,13 @@ const Appointment = () => {
     const [recording, setRecording] = useState(false); // Recording state
     const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
     const [fulltranscript, setFullTranscript] = useState("");
-    const [transcript, setTranscript] = useState(false);
-    const [summary, setSummary] = useState(true);
+    const { id } = useParams();
+    const [jsonGemini, setJsonGemini] = useState("");
+    const [transcriptText, setTranscriptText] = useState("");
+    const [activeTab, setActiveTab] = useState("summary");
+ 
 
-    const handleTranscript = () => {
-        setTranscript(true);
-        setSummary(false);
-    };
-    const handleSummary = () => {
-        setTranscript(false);
-        setSummary(true);
-    };
+    
 
     const firebaseConfig = {
         apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
@@ -136,6 +134,36 @@ const Appointment = () => {
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    //get the doc nad data values ot dispaly
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const docRef = doc(db, 'record_history', id); // Replace with your collection name
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const invalidJsonString = docSnap.data().geminiResult;
+                    // Replace single quotes with double quotes and add double quotes around keys
+                    const validJsonString = invalidJsonString
+                        .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
+                        .replace(/'/g, '"'); // Replace single quotes with double quotes
+                    console.log("valid json string: ", validJsonString);
+                    setJsonGemini(JSON.parse(validJsonString));
+                    setTranscriptText(docSnap.data().transcript);
+                } else {
+                    console.log("No such document!");
+                }
+            } catch (error) {
+                console.error("Error fetching document:", error);
+            }
+        };
+    
+        fetchData(); // Call the async function
+    
+        // Optionally, you can return a cleanup function if needed
+    }, [id]); // Ensure to add `id` to the dependencies if it changes
+    
 
     const startRecording = async () => {
         try {
@@ -204,33 +232,73 @@ const Appointment = () => {
     };
     return (
         <PageContainer>
-            <ContentContainer>
-                <MainColumn>
-                    <Title>Appointment 1</Title>
-                    <Date>Oct 18, 2024 12:00 PM</Date>
-                    <AppointmentAndTranscribeContainer>
-                        <AppointmentList>
-                            <Selection>
-                                <Option style={{ width: 30 + "%" }} onClick={handleSummary} active={summary}>Summary</Option>
-                                <Option style={{ width: 30 + "%" }} onClick={handleTranscript} active={transcript}>Transcript</Option>
-                            </Selection>
-                            <AppointmentItem>
-                                {summary && <><p>serverSummary</p></>}
-                                {transcript && <><p>serverTranscript</p></>}
-                            </AppointmentItem>
-                        </AppointmentList>
-                        <TranscribeBox>
-                            <p>Press the button to start transcribing your doctor appointments!</p>
-                            {fulltranscript}
-                            <TranscribeButton onClick={toggleRecording}>
-                                <Mic size={24} />
-                            </TranscribeButton>
-                            <p>Transcribe</p>
-                        </TranscribeBox>
-                    </AppointmentAndTranscribeContainer>
-                </MainColumn>
-            </ContentContainer>
-        </PageContainer>
+    <ContentContainer>
+        <MainColumn>
+            <Title>Appointment 1</Title>
+            <Date>Oct 18, 2024 12:00 PM</Date>
+            <AppointmentAndTranscribeContainer>
+                <AppointmentList>
+                    <Selection>
+                        <Option 
+                            style={{ width: "30%" }} 
+                            active={activeTab === "summary"}
+                            onClick={() => setActiveTab("summary")}
+                        >
+                            Summary
+                        </Option>
+                        <Option 
+                            style={{ width: "30%" }} 
+                            active={activeTab === "transcript"}
+                            onClick={() => setActiveTab("transcript")}
+                        >
+                            Transcript
+                        </Option>
+                    </Selection>
+                    
+                    <AppointmentItem>
+                        {activeTab === "summary" ? (
+                            <>
+                                <h3>Main Complaint:</h3>
+                                <p>{}</p>
+                                <p>{jsonGemini.main_complaint || "N/A"}</p>
+                                
+                                <h3>General Summary:</h3>
+                                <p>{jsonGemini.general_summary || "N/A"}</p>
+                                <p></p>
+
+                                <h3>Definitions:</h3>
+                                <p>{jsonGemini.definitions || "N/A"}</p>
+                                <p></p>
+
+                                <h3>Prescriptions:</h3>
+                                <p>{jsonGemini.prescriptions || "N/A"}</p>
+                                <p></p>
+
+                            </>
+                        ) : (
+                            <>
+                                <h3>Transcript:</h3>
+                                
+                                <p>{transcriptText || "N/A"}</p>
+                            </>
+                        )}
+                    </AppointmentItem>
+                </AppointmentList>
+                
+
+                <TranscribeBox>
+                    <p>Press the button to start transcribing your doctor appointments!</p>
+                    {fulltranscript}
+                    <TranscribeButton onClick={toggleRecording}>
+                        <Mic size={24} />
+                    </TranscribeButton>
+                    <p>Transcribe</p>
+                </TranscribeBox>
+            </AppointmentAndTranscribeContainer>
+        </MainColumn>
+    </ContentContainer>
+</PageContainer>
+
     );
 };
 
