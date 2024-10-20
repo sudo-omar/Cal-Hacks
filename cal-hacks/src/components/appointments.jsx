@@ -145,11 +145,11 @@ const Appointment = () => {
                 if (docSnap.exists()) {
                     const invalidJsonString = docSnap.data().geminiResult;
                     // Replace single quotes with double quotes and add double quotes around keys
-                    const validJsonString = invalidJsonString
-                        .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
-                        .replace(/'/g, '"'); // Replace single quotes with double quotes
-                    console.log("valid json string: ", validJsonString);
-                    setJsonGemini(JSON.parse(validJsonString));
+                    // const validJsonString = invalidJsonString
+                    //     .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
+                    //     .replace(/'/g, '"'); // Replace single quotes with double quotes
+                    // console.log("valid json string: ", validJsonString);
+                    setJsonGemini(JSON.parse(invalidJsonString));
                     setTranscriptText(docSnap.data().transcript);
                 } else {
                     console.log("No such document!");
@@ -188,7 +188,7 @@ const Appointment = () => {
                         (prevTranscript) => prevTranscript + " " + newTranscript
                     );
                 });
-                console.log(fulltranscript);
+                // console.log(fulltranscript);
 
                 connection.on(LiveTranscriptionEvents.Error, (err) => {
                     console.error(err);

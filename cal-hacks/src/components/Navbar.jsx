@@ -72,7 +72,7 @@ const Navbar = () => {
                 <MenuOption>About</MenuOption>
                 <MenuOption>Contact</MenuOption>
                 <MenuOption onClick={() => {window.location.replace("/report-and-talk")}}>Login</MenuOption>
-                <SignUpButton onClick={() => {window.location.replace("/log-of-cases")}}>Sign Up</SignUpButton>
+                <SignUpButton onClick={() => {window.location.replace("/signUp")}}>Sign Up</SignUpButton>
             </RightNav>
         </Container>
     )
