@@ -8,6 +8,7 @@ import Contact from "./components/Contact";
 import ReportAndTalk from "./components/ReportAndTalk";
 import Appointment from "./components/appointments";
 import Login from "./components/Login"; // Import the Login component
+import { useState, useEffect } from 'react';
 
 
 import { Link } from "react-router-dom";
@@ -17,6 +18,8 @@ import "./App.css";
 
 const App = () => {
   return (
+
+    
     <Router>
       <Navbar /> {/* Navbar always displayed */}
       <Routes>

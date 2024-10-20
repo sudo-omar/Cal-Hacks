@@ -132,6 +132,7 @@ const Appointment = () => {
     const [activeTab, setActiveTab] = useState("summary");
     const [appointmentData, setAppointmentData] = useState(null);
 
+
     console.log("ID from params:", id);
 
     // Initialize Firebase
@@ -238,12 +239,14 @@ useEffect(() => {
                 console.log("Document snapshot exists");
                 const geminiResult = docSnap.data().geminiResult; // Get the geminiResult directly
 
+                setAppointmentData(docSnap.data());
                 if (typeof geminiResult === 'string') {
                     // Only parse if it's a string
                     try {
                         console.log("geminiResult before parsing:", geminiResult);
                         const parsedJson = JSON.parse(geminiResult);
                         console.log("Parsed JSON:", parsedJson);
+                        
                         setJsonGemini(parsedJson);
                     } catch (parseError) {
                         console.error("Error parsing JSON:", parseError);
@@ -254,6 +257,7 @@ useEffect(() => {
                     // If it's already an object, set it directly
                     setJsonGemini(geminiResult);
                 }
+                
 
                 // Do not set the transcript here
             } else {
@@ -360,7 +364,7 @@ useEffect(() => {
     <ContentContainer>
         <MainColumn>
             <Title>{appointmentData?.title  || 'na'}</Title>
-            <Date>{appointmentData?.timestamp.toDate().toLocaleString() || 'na'}</Date>
+            <Date>{appointmentData?.timestamp?.toDate().toLocaleString() || 'na'}</Date>
             <AppointmentAndTranscribeContainer>
                 <AppointmentList>
                     <Selection>
@@ -385,18 +389,16 @@ useEffect(() => {
                             <>
                                 <h3>Main Complaint:</h3>
                                 <p>{}</p>
-                                <p>{appointmentData?.geminiResult.main_complaint || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult?.main_complaint || "N/A"}</p>
                                 
                                 <h3>General Summary:</h3>
-                                <p>{appointmentData?.geminiResult.summary || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult?.summary || "N/A"}</p>
                                 <p></p>
 
-                                <h3>Definitions:</h3>
-                                <p>{appointmentData?.geminiResult.definitions || "N/A"}</p>
-                                <p></p>
+                                
 
                                 <h3>Prescriptions:</h3>
-                                <p>{appointmentData?.geminiResult.prescriptions || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult?.prescriptions || "N/A"}</p>
                                 <p></p>
 
                             </>
