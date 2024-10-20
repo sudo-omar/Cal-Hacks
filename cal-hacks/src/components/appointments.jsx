@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import SpeechAI from "./SpeechAI";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -114,10 +115,6 @@ const Selection = styled.div`
 `;
 
 const Appointment = () => {
-    const mediaRecorderRef = useRef(null);
-    const [recording, setRecording] = useState(false); // Recording state
-    const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
-    const [fulltranscript, setFullTranscript] = useState("");
     const [transcript, setTranscript] = useState(false);
     const [summary, setSummary] = useState(true);
 
@@ -130,84 +127,6 @@ const Appointment = () => {
         setSummary(true);
     };
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
-        authDomain: "medicai-2ab57.firebaseapp.com",
-        projectId: "medicai-2ab57",
-        storageBucket: "medicai-2ab57.appspot.com",
-        messagingSenderId: "1010875331468",
-        appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const startRecording = async () => {
-        try {
-            // Get audio stream from user's microphone
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
-
-            // Create a live transcription connection
-            const connection = deepgram.listen.live({
-                model: "nova-2",
-                language: "en-US",
-                smart_format: true,
-            });
-
-            // Listen for transcription events
-            connection.on(LiveTranscriptionEvents.Open, () => {
-                console.log("Connection opened");
-
-                connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-                    const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
-                    setFullTranscript(
-                        (prevTranscript) => prevTranscript + " " + newTranscript
-                    );
-                });
-                console.log(fulltranscript);
-
-                connection.on(LiveTranscriptionEvents.Error, (err) => {
-                    console.error(err);
-                });
-            });
-
-            // When data is available, send it to Deepgram
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    connection.send(event.data); // Send the audio data
-                }
-            };
-
-            // Start recording
-            mediaRecorderRef.current.start(250); // Send audio every 250 ms
-            setRecording(true); // Update state to indicate recording has started
-        } catch (error) {
-            console.error(
-                "Error accessing microphone or Deepgram connection:",
-                error
-            );
-        }
-    };
-
-    const stopRecording = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop(); // Stop the recording
-            mediaRecorderRef.current.stream
-                .getTracks()
-                .forEach((track) => track.stop()); // Stop all audio tracks
-            setRecording(false); // Update state to indicate recording has stopped
-        }
-    };
-
-    const toggleRecording = () => {
-        if (recording) {
-            stopRecording();
-        } else {
-            startRecording();
-        }
-    };
     return (
         <PageContainer>
             <ContentContainer>
@@ -227,11 +146,7 @@ const Appointment = () => {
                         </AppointmentList>
                         <TranscribeBox>
                             <p>Press the button to start transcribing your doctor appointments!</p>
-                            {fulltranscript}
-                            <TranscribeButton onClick={toggleRecording}>
-                                <Mic size={24} />
-                            </TranscribeButton>
-                            <p>Transcribe</p>
+                            <SpeechAI/>
                         </TranscribeBox>
                     </AppointmentAndTranscribeContainer>
                 </MainColumn>
