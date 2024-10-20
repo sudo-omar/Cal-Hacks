@@ -10,7 +10,7 @@ const Container = styled.div`
     overflow-x: hidden;
     backdrop-filter: blur(20px);
     position: fixed;
-    background-color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.3);
     z-index: 100;
 `;
 
