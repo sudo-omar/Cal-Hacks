@@ -275,59 +275,59 @@ const ReportAndTalk = () => {
   };
 
   return (
-    <>
-      <GlobalStyle />
+      <div>
+      {/* <GlobalStyle />
       <PageContainer>
-//         <Title>My Transcripts</Title>
-//         <SearchBar>
-//           <Search size={20} color="#666" />
-//           <input type="text" placeholder="Search" />
-//         </SearchBar>
-//         <ContentContainer>
-//           <AppointmentList>
-//             {[1, 2, 3].map((num) => (
-//               <AppointmentCard key={num} to={`/appointments`}>
-//                 <AppointmentTitle>Appointment {num}</AppointmentTitle>
-//                 <AppointmentDetail>
-//                   <Calendar size={16} />
-//                   {num === 1
-//                     ? "Jan 18, 2024"
-//                     : num === 2
-//                     ? "May 19, 2024"
-//                     : "Oct 18, 2024"}
-//                 </AppointmentDetail>
-//                 <AppointmentDetail>
-//                   <Clock size={16} />
-//                   {num === 1 ? "12:00 PM" : num === 2 ? "1:00 PM" : "2:00 PM"}
-//                 </AppointmentDetail>
-//                 <AppointmentDetail>
-//                   <MapPin size={16} />
-//                   UCLA Hospital
-//                 </AppointmentDetail>
-//                 <AppointmentDetail>
-//                   <FileText size={16} />
-//                   Reason:{" "}
-//                   {num === 1
-//                     ? "Abdominal Pain"
-//                     : num === 2
-//                     ? "Persistent Cough"
-//                     : "Severe Headaches"}
-//                 </AppointmentDetail>
-//               </AppointmentCard>
-//             ))}
-//           </AppointmentList>
-//           <TranscribeBox>
-//             <p>
-//               Press the button to start transcribing your doctor appointments!
-//             </p>
-//             <TranscribeButton onClick={toggleRecording}>
-//               <Mic size={24} color="white" />
-//             </TranscribeButton>
-//             <p>Transcribe</p>
-//           </TranscribeBox>
-//         </ContentContainer>
-//       </PageContainer>
-//     </>
+        <Title>My Transcripts</Title>
+        <SearchBar>
+          <Search size={20} color="#666" />
+          <input type="text" placeholder="Search" />
+        </SearchBar>
+        <ContentContainer>
+          <AppointmentList>
+            {[1, 2, 3].map((num) => (
+              <AppointmentCard key={num} to={`/appointments`}>
+                <AppointmentTitle>Appointment {num}</AppointmentTitle>
+                <AppointmentDetail>
+                  <Calendar size={16} />
+                  {num === 1
+                    ? "Jan 18, 2024"
+                    : num === 2
+                    ? "May 19, 2024"
+                    : "Oct 18, 2024"}
+                </AppointmentDetail>
+                <AppointmentDetail>
+                  <Clock size={16} />
+                  {num === 1 ? "12:00 PM" : num === 2 ? "1:00 PM" : "2:00 PM"}
+                </AppointmentDetail>
+                <AppointmentDetail>
+                  <MapPin size={16} />
+                  UCLA Hospital
+                </AppointmentDetail>
+                <AppointmentDetail>
+                  <FileText size={16} />
+                  Reason:{" "}
+                  {num === 1
+                    ? "Abdominal Pain"
+                    : num === 2
+                    ? "Persistent Cough"
+                    : "Severe Headaches"}
+                </AppointmentDetail>
+              </AppointmentCard>
+            ))}
+          </AppointmentList>
+          <TranscribeBox>
+            <p>
+              Press the button to start transcribing your doctor appointments!
+            </p>
+            <TranscribeButton onClick={toggleRecording}>
+              <Mic size={24} color="white" />
+            </TranscribeButton>
+            <p>Transcribe</p>
+          </TranscribeBox>
+        </ContentContainer>
+      </PageContainer>
+  //     </> */}
           <Title>My Transcripts</Title>
           <SearchBar>
               <Search size={20} color="#666" />
@@ -404,8 +404,8 @@ const ReportAndTalk = () => {
               <p>Transcribe</p>
             </TranscribeBox>
           </AppointmentAndTranscribeContainer>
+      </div>
        
-    </PageContainer>
   );
 };
 

@@ -144,96 +144,96 @@ const Appointment = () => {
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // const app = initializeApp(firebaseConfig);
+    // const db = getFirestore(app);
 
-    //get the doc nad data values ot dispaly
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const docRef = doc(db, 'record_history', id); // Replace with your collection name
-                const docSnap = await getDoc(docRef);
+    // //get the doc nad data values ot dispaly
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const docRef = doc(db, 'record_history', id); // Replace with your collection name
+    //             const docSnap = await getDoc(docRef);
                 
-                if (docSnap.exists()) {
-                    const invalidJsonString = docSnap.data().geminiResult;
-                    // Replace single quotes with double quotes and add double quotes around keys
-                    // const validJsonString = invalidJsonString
-                    //     .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
-                    //     .replace(/'/g, '"'); // Replace single quotes with double quotes
-                    // console.log("valid json string: ", validJsonString);
-                    setJsonGemini(JSON.parse(invalidJsonString));
-                    setTranscriptText(docSnap.data().transcript);
-                } else {
-                    console.log("No such document!");
-                }
-            } catch (error) {
-                console.error("Error fetching document:", error);
-            }
-        };
+    //             if (docSnap.exists()) {
+    //                 const invalidJsonString = docSnap.data().geminiResult;
+    //                 // Replace single quotes with double quotes and add double quotes around keys
+    //                 // const validJsonString = invalidJsonString
+    //                 //     .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
+    //                 //     .replace(/'/g, '"'); // Replace single quotes with double quotes
+    //                 // console.log("valid json string: ", validJsonString);
+    //                 setJsonGemini(JSON.parse(invalidJsonString));
+    //                 setTranscriptText(docSnap.data().transcript);
+    //             } else {
+    //                 console.log("No such document!");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching document:", error);
+    //         }
+    //     };
     
-        fetchData(); // Call the async function
+    //     fetchData(); // Call the async function
     
-        // Optionally, you can return a cleanup function if needed
-    }, [id]); // Ensure to add `id` to the dependencies if it changes
+    //     // Optionally, you can return a cleanup function if needed
+    // }, [id]); // Ensure to add `id` to the dependencies if it changes
     
 
-    const startRecording = async () => {
-        try {
-            // Get audio stream from user's microphone
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
+    // const startRecording = async () => {
+    //     try {
+    //         // Get audio stream from user's microphone
+    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //         mediaRecorderRef.current = new MediaRecorder(stream);
 
-            // Create a live transcription connection
-            const connection = deepgram.listen.live({
-                model: "nova-2",
-                language: "en-US",
-                smart_format: true,
-            });
+    //         // Create a live transcription connection
+    //         const connection = deepgram.listen.live({
+    //             model: "nova-2",
+    //             language: "en-US",
+    //             smart_format: true,
+    //         });
 
-            // Listen for transcription events
-            connection.on(LiveTranscriptionEvents.Open, () => {
-                console.log("Connection opened");
+    //         // Listen for transcription events
+    //         connection.on(LiveTranscriptionEvents.Open, () => {
+    //             console.log("Connection opened");
 
-                connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-                    const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
-                    setFullTranscript(
-                        (prevTranscript) => prevTranscript + " " + newTranscript
-                    );
-                });
-                // console.log(fulltranscript);
+    //             connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+    //                 const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
+    //                 setFullTranscript(
+    //                     (prevTranscript) => prevTranscript + " " + newTranscript
+    //                 );
+    //             });
+    //             // console.log(fulltranscript);
 
-                connection.on(LiveTranscriptionEvents.Error, (err) => {
-                    console.error(err);
-                });
-            });
+    //             connection.on(LiveTranscriptionEvents.Error, (err) => {
+    //                 console.error(err);
+    //             });
+    //         });
 
-            // When data is available, send it to Deepgram
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    connection.send(event.data); // Send the audio data
-                }
-            };
+    //         // When data is available, send it to Deepgram
+    //         mediaRecorderRef.current.ondataavailable = (event) => {
+    //             if (event.data.size > 0) {
+    //                 connection.send(event.data); // Send the audio data
+    //             }
+    //         };
 
-            // Start recording
-            mediaRecorderRef.current.start(250); // Send audio every 250 ms
-            setRecording(true); // Update state to indicate recording has started
-        } catch (error) {
-            console.error(
-                "Error accessing microphone or Deepgram connection:",
-                error
-            );
-        }
-    };
+    //         // Start recording
+    //         mediaRecorderRef.current.start(250); // Send audio every 250 ms
+    //         setRecording(true); // Update state to indicate recording has started
+    //     } catch (error) {
+    //         console.error(
+    //             "Error accessing microphone or Deepgram connection:",
+    //             error
+    //         );
+    //     }
+    // };
 
-    const stopRecording = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop(); // Stop the recording
-            mediaRecorderRef.current.stream
-                .getTracks()
-                .forEach((track) => track.stop()); // Stop all audio tracks
-            setRecording(false); // Update state to indicate recording has stopped
-        }
-    };
+    // const stopRecording = () => {
+    //     if (mediaRecorderRef.current) {
+    //         mediaRecorderRef.current.stop(); // Stop the recording
+    //         mediaRecorderRef.current.stream
+    //             .getTracks()
+    //             .forEach((track) => track.stop()); // Stop all audio tracks
+    //         setRecording(false); // Update state to indicate recording has stopped
+    //     }
+    // };
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
