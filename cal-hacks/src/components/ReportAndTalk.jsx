@@ -6,6 +6,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import Gemini from './Gemini';
+
 import {
   addDoc,
   collection,
