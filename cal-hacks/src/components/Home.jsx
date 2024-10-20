@@ -1,35 +1,11 @@
 import React from 'react';
 import Spline from '@splinetool/react-spline';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Activity, Lock, Smartphone } from 'lucide-react';
-
-const animateGradient = keyframes`
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-`;
-
-const AnimatedBackground = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-            -45deg,
-            rgba(74, 144, 226, 0.1),
-            rgba(80, 227, 194, 0.1),
-            rgba(245, 166, 35, 0.1),
-            rgba(255, 255, 255, 0.1)
-    );
-    background-size: 400% 400%;
-    animation: ${animateGradient} 15s ease infinite;
-`;
 
 export default function Home() {
     return (
         <Container>
-            <AnimatedBackground />
             <Content>
                 <LeftNav>
                     <h1>MedicAI</h1>
@@ -58,9 +34,7 @@ export default function Home() {
                     <CTAButton>Start Your Health Journey</CTAButton>
                 </LeftNav>
                 <RightNav>
-                    <SplineContainer>
-                        <Spline scene="https://prod.spline.design/7I6L59LBWm2a6kol/scene.splinecode" />
-                    </SplineContainer>
+                    <Spline scene="https://prod.spline.design/AqhHEmAGLPDY4H1s/scene.splinecode"/>
                 </RightNav>
             </Content>
         </Container>
@@ -82,10 +56,10 @@ const Content = styled.div`
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    padding: 0 5%;
+    padding: 0 0 0 5%;
 
     h1 {
-        font-size: 3.5rem;
+        font-size: 5rem;
         margin-bottom: 0.5rem;
         color: #4A90E2;
     }
@@ -97,17 +71,12 @@ const Tagline = styled.h2`
     margin-bottom: 2rem;
 `;
 
-const SplineContainer = styled.div`
-    width: 100%;
-    height: 80%;
-`;
-
 const LeftNav = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 50%;
-    height: 100%;
+    height: 100vh;
 `;
 
 const RightNav = styled.div`
@@ -115,7 +84,7 @@ const RightNav = styled.div`
     justify-content: center;
     align-items: center;
     width: 50%;
-    height: 100%;
+    height: 100vh;
 `;
 
 const FeatureBox = styled.div`
@@ -151,7 +120,7 @@ const FeatureInfo = styled.div`
 `;
 
 const CTAButton = styled.button`
-    background-color: #F5A623;
+    background-color: #A784D9;
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -160,8 +129,8 @@ const CTAButton = styled.button`
     cursor: pointer;
     transition: background-color 0.2s;
     margin-top: 2rem;
-
+    width: 50%;
     &:hover {
-        background-color: #E69611;
+        background-color: #8469ac;
     }
 `;

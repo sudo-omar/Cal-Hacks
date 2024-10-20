@@ -114,10 +114,6 @@ const IconWrapper = styled.span`
 const Login = () => {
   return (
       <>
-        <Spline
-            scene="https://prod.spline.design/HlMyK0A8D3bLp-iT/scene.splinecode"
-            style={{ width: "100vw", height: "100vh", position: "absolute", zIndex: 0 , opacity: 0.9}}
-        />
     <PageContainer>
       <LoginContainer>
         <Header>

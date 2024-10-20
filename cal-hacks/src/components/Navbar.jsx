@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import logo from "./logo192.png";
+import Logo from "./Logo.jsx";
 
 const Container = styled.div`
     width: 100vw;
@@ -51,7 +51,7 @@ const MenuOption = styled.p`
 `;
 
 const SignUpButton = styled.div`
-    background-color: #FFD700;
+    background-color: #C4A9E2;
     padding: 10px 20px;
     border-radius: 50px;
     font-size: 1.25em;
@@ -59,19 +59,23 @@ const SignUpButton = styled.div`
     transition: all 0.2s;
     &:hover {
         transform: scale(1.1);
-        color: purple;
     }
 `;
 
 const Navbar = () => {
     return (
         <Container>
-            <img src={logo} style={{width: 50 + "px", height: 50 + "px", marginLeft: 2 + "%", cursor: "pointer"}} alt="Logo"/>
+            <div style={{width: 13 + "vw", display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "2vw"}}>
+                <a href="/" target="_self" style={{display: "flex", alignItems: "center" , textDecoration: "none"}}>
+                    <Logo />
+                    <p style={{fontWeight: "bold", marginLeft: "10px"}}>MedicAl</p>
+                </a>
+            </div>
             <RightNav>
                 <MenuOption onClick={() => {window.location.replace("/")}}>Home</MenuOption>
-                <MenuOption>About</MenuOption>
-                <MenuOption>Contact</MenuOption>
-                <MenuOption onClick={() => {window.location.replace("/report-and-talk")}}>Login</MenuOption>
+                <MenuOption onClick={() => {window.location.replace("/report-and-talk")}}>About</MenuOption>
+                <MenuOption onClick={() => {window.location.replace("/appointments")}}>Contact</MenuOption>
+                <MenuOption onClick={() => {window.location.replace("/login")}}>Login</MenuOption>
                 <SignUpButton onClick={() => {window.location.replace("")}}>Sign Up</SignUpButton>
             </RightNav>
         </Container>

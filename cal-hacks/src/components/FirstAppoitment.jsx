@@ -1,7 +1,10 @@
+import React from 'react';
+import Demo from './SpeechAI';
+
 const FirstAppoitment = () => {
     return (
         <div>
-            hi
+            <Demo />
         </div>
     )
 }
