@@ -4,7 +4,7 @@ import { Eye, ArrowRightCircle } from "lucide-react";
 import GoogleIcon from '@mui/icons-material/Google';
 import Spline from '@splinetool/react-spline';
 import App from "../App";
-import AppNavBar from "./AppNavBar";
+import LoginNavBar from "./LoginNavBar";
 
 const PageContainer = styled.div`
   display: flex;
@@ -116,7 +116,7 @@ const IconWrapper = styled.span`
 const Login = () => {
   return (
       <>
-        <AppNavBar />
+        <LoginNavBar />
     <PageContainer>
       <LoginContainer>
         <Header>
