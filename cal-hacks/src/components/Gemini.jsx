@@ -1,51 +1,69 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 
-
-// Define your function here
 const apiKey = 'AIzaSyANTwQaXVS9TM6FQL9H6Z_c1Uk0qsZFgZQ';
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export const Gemini = (param) => {
-  // Your function logic
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-
-//   const format = {
-//     "general_summary": "",
-//     "definitions": [],
-//     "prescriptions": []
-//   }
-
-//   const prompt = "You are a medical professional reviewing the transcription of a recent appointment with a patient." +
-//   " The transcription is as follows: " + param + " The summary should include a general summary of the transcription, definitions of any medical terms, and any prescriptions that were given to the patient. Please provide a structured summary based on this json format inputed";
-  
-const input = {
-    transcription: param, // The patient's transcription
-    format: {
-      "general_summary": "",
-      "definitions": [],
-      "prescriptions": []
+  const responseSchema = {
+    type: SchemaType.OBJECT,
+    properties: {
+      summary: {
+        type: SchemaType.STRING,
+        description: 'Summary of transcription',
+        nullable: false,
+      },
+      main_complaint: {
+        type: SchemaType.STRING,
+        description: 'Main complaint of the patient',
+        nullable: true, // Adjust based on your requirements
+      },
+      definitions: {
+        type: SchemaType.OBJECT,
+        description: 'Definitions of medical terms',
+        nullable: true,
+        properties: {
+          term: {
+            type: SchemaType.STRING,
+            description: 'Medical term',
+          },
+          meaning: {
+            type: SchemaType.STRING,
+            description: 'Definition of the medical term',
+          },
+        },
+      },
+      prescriptions: {
+        type: SchemaType.STRING,
+        description: 'Prescriptions given to the patient',
+        nullable: true,
+      },
     },
-    instructions: "You are a medical professional reviewing the transcription of a recent appointment with a patient. Please provide a structured summary based on the provided format."
+    required: ['summary'], // Specify required fields if necessary
   };
 
-// console.log("prompt:" + prompt)
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-pro',
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema: responseSchema,
+    },
+  });
+
+  const prompt =
+    'You are a medical professional reviewing the transcription of a recent appointment with a patient. ' +
+    ' Please provide a consice and informative summary of the transcription. ' +
+    'The summary should include a general summary of the transcription, definitions of any medical terms, ' +
+    'and any prescriptions that were given to the patient. Here is the transcription: ' +
+    param;
 
   async function createSummary() {
     try {
-
-    // console.log("prompt:" + prompt)
-        
-      const result = await model.generateContent(input);
-      const response = await result.response();
-      console.log(result)
-      const text = response.text();
-      console.log("this is resutl: " + text);
-      return text;
+      const result = await model.generateContent(prompt);
+      return result.response.text();
     } catch (error) {
       console.error(error);
     }
   }
-  
   return createSummary();
 };
 

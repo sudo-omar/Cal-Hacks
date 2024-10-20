@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Mic } from "lucide-react";
 import { useRef } from "react";
@@ -6,6 +6,8 @@ import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -120,30 +122,118 @@ const Selection = styled.div`
 `;
 
 const Appointment = () => {
-  const mediaRecorderRef = useRef(null);
-  const [recording, setRecording] = useState(false); // Recording state
-  const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
-  const [fulltranscript, setFullTranscript] = useState("");
-  const [transcript, setTranscript] = useState(false);
-  const [summary, setSummary] = useState(true);
+    const mediaRecorderRef = useRef(null);
+    const [recording, setRecording] = useState(false); // Recording state
+    const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
+    const [fulltranscript, setFullTranscript] = useState("");
+    const { id } = useParams();
+    const [jsonGemini, setJsonGemini] = useState("");
+    const [transcriptText, setTranscriptText] = useState("");
+    const [activeTab, setActiveTab] = useState("summary");
+ 
 
-  const handleTranscript = () => {
-    setTranscript(true);
-    setSummary(false);
-  };
-  const handleSummary = () => {
-    setTranscript(false);
-    setSummary(true);
-  };
+    
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
-    authDomain: "medicai-2ab57.firebaseapp.com",
-    projectId: "medicai-2ab57",
-    storageBucket: "medicai-2ab57.appspot.com",
-    messagingSenderId: "1010875331468",
-    appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
+        authDomain: "medicai-2ab57.firebaseapp.com",
+        projectId: "medicai-2ab57",
+        storageBucket: "medicai-2ab57.appspot.com",
+        messagingSenderId: "1010875331468",
+        appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    //get the doc nad data values ot dispaly
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const docRef = doc(db, 'record_history', id); // Replace with your collection name
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const invalidJsonString = docSnap.data().geminiResult;
+                    // Replace single quotes with double quotes and add double quotes around keys
+                    // const validJsonString = invalidJsonString
+                    //     .replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":') // Add quotes around keys
+                    //     .replace(/'/g, '"'); // Replace single quotes with double quotes
+                    // console.log("valid json string: ", validJsonString);
+                    setJsonGemini(JSON.parse(invalidJsonString));
+                    setTranscriptText(docSnap.data().transcript);
+                } else {
+                    console.log("No such document!");
+                }
+            } catch (error) {
+                console.error("Error fetching document:", error);
+            }
+        };
+    
+        fetchData(); // Call the async function
+    
+        // Optionally, you can return a cleanup function if needed
+    }, [id]); // Ensure to add `id` to the dependencies if it changes
+    
+
+    const startRecording = async () => {
+        try {
+            // Get audio stream from user's microphone
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+
+            // Create a live transcription connection
+            const connection = deepgram.listen.live({
+                model: "nova-2",
+                language: "en-US",
+                smart_format: true,
+            });
+
+            // Listen for transcription events
+            connection.on(LiveTranscriptionEvents.Open, () => {
+                console.log("Connection opened");
+
+                connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+                    const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
+                    setFullTranscript(
+                        (prevTranscript) => prevTranscript + " " + newTranscript
+                    );
+                });
+                // console.log(fulltranscript);
+
+                connection.on(LiveTranscriptionEvents.Error, (err) => {
+                    console.error(err);
+                });
+            });
+
+            // When data is available, send it to Deepgram
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    connection.send(event.data); // Send the audio data
+                }
+            };
+
+            // Start recording
+            mediaRecorderRef.current.start(250); // Send audio every 250 ms
+            setRecording(true); // Update state to indicate recording has started
+        } catch (error) {
+            console.error(
+                "Error accessing microphone or Deepgram connection:",
+                error
+            );
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop(); // Stop the recording
+            mediaRecorderRef.current.stream
+                .getTracks()
+                .forEach((track) => track.stop()); // Stop all audio tracks
+            setRecording(false); // Update state to indicate recording has stopped
+        }
+    };
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
@@ -214,58 +304,76 @@ const Appointment = () => {
       startRecording();
     }
   };
-  return (
-    <PageContainer>
-      <ContentContainer>
+    return (
+        <PageContainer>
+    <ContentContainer>
         <MainColumn>
-          <Title>Appointment 1</Title>
-          <Date>Oct 18, 2024 12:00 PM</Date>
-          <AppointmentAndTranscribeContainer>
-            <AppointmentList>
-              <Selection>
-                <Option
-                  style={{ width: 30 + "%" }}
-                  onClick={handleSummary}
-                  active={summary}
-                >
-                  Summary
-                </Option>
-                <Option
-                  style={{ width: 30 + "%" }}
-                  onClick={handleTranscript}
-                  active={transcript}
-                >
-                  Transcript
-                </Option>
-              </Selection>
-              <AppointmentItem>
-                {summary && (
-                  <>
-                    <p>oiwenfwiofneffeniowifnwefonwoiewnuirbnown</p>
-                  </>
-                )}
-                {transcript && (
-                  <>
-                    <p>serverTranscript</p>
-                  </>
-                )}
-              </AppointmentItem>
-            </AppointmentList>
-            <TranscribeBox>
-              <p>
-                Press the button to start transcribing your doctor appointments!
-              </p>
-              {fulltranscript}
-              <TranscribeButton onClick={toggleRecording}>
-                <Mic size={24} />
-              </TranscribeButton>
-              <p>Transcribe</p>
-            </TranscribeBox>
-          </AppointmentAndTranscribeContainer>
+            <Title>Appointment 1</Title>
+            <Date>Oct 18, 2024 12:00 PM</Date>
+            <AppointmentAndTranscribeContainer>
+                <AppointmentList>
+                    <Selection>
+                        <Option 
+                            style={{ width: "30%" }} 
+                            active={activeTab === "summary"}
+                            onClick={() => setActiveTab("summary")}
+                        >
+                            Summary
+                        </Option>
+                        <Option 
+                            style={{ width: "30%" }} 
+                            active={activeTab === "transcript"}
+                            onClick={() => setActiveTab("transcript")}
+                        >
+                            Transcript
+                        </Option>
+                    </Selection>
+                    
+                    <AppointmentItem>
+                        {activeTab === "summary" ? (
+                            <>
+                                <h3>Main Complaint:</h3>
+                                <p>{}</p>
+                                <p>{jsonGemini.main_complaint || "N/A"}</p>
+                                
+                                <h3>General Summary:</h3>
+                                <p>{jsonGemini.general_summary || "N/A"}</p>
+                                <p></p>
+
+                                <h3>Definitions:</h3>
+                                <p>{jsonGemini.definitions || "N/A"}</p>
+                                <p></p>
+
+                                <h3>Prescriptions:</h3>
+                                <p>{jsonGemini.prescriptions || "N/A"}</p>
+                                <p></p>
+
+                            </>
+                        ) : (
+                            <>
+                                <h3>Transcript:</h3>
+                                
+                                <p>{transcriptText || "N/A"}</p>
+                            </>
+                        )}
+                    </AppointmentItem>
+                </AppointmentList>
+                
+
+                <TranscribeBox>
+                    <p>Press the button to start transcribing your doctor appointments!</p>
+                    {fulltranscript}
+                    <TranscribeButton onClick={toggleRecording}>
+                        <Mic size={24} />
+                    </TranscribeButton>
+                    <p>Transcribe</p>
+                </TranscribeBox>
+            </AppointmentAndTranscribeContainer>
         </MainColumn>
-      </ContentContainer>
-    </PageContainer>
-  );
+    </ContentContainer>
+</PageContainer>
+
+    );
 };
 
 export default Appointment;

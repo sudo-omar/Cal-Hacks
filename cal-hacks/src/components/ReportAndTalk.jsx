@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Mic, Search, Calendar, Clock, MapPin, FileText } from "lucide-react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
@@ -6,6 +6,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Gemini from "./Gemini";
+import { addDoc, collection, getDocs, doc, getDoc } from "firebase/firestore";
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -22,6 +23,11 @@ const PageContainer = styled.div`
   margin: 0 auto;
   padding: 4% 20px;
   min-height: 100vh;
+`;
+
+const AppointmentAndTranscribeContainer = styled.div`
+  display: flex;
+  gap: 20px;
 `;
 
 const Title = styled.h1`
@@ -56,17 +62,31 @@ const AppointmentList = styled.div`
   flex: 1;
 `;
 
-const AppointmentCard = styled(Link)`
-  background-color: white;
-  width: 90%;
-  border-radius: 8px;
+// const AppointmentCard = styled(Link)`
+//   background-color: white;
+//   width: 90%;
+//   border-radius: 8px;
+//   padding: 20px;
+//   margin-bottom: 20px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//   transition: transform 0.2s;
+//   text-decoration: none;
+//   color: inherit;
+//   display: block;
+
+const AppointmentItem = styled.div`
+  background-color: #d9d9d9;
   padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-  text-decoration: none;
-  color: inherit;
-  display: block;
+  border-radius: 4px;
+`;
+
+const AppointmentCard = styled.div`
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 
   &:hover {
     transform: translateY(-5px);
@@ -129,6 +149,40 @@ const ReportAndTalk = () => {
   const [recording, setRecording] = useState(false);
   const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
   const [fulltranscript, setFullTranscript] = useState("");
+  const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false)
+  const [appointments, setAppointments] = useState([]);
+
+    useEffect(() => {
+        fetchAppointments();
+    }, []);
+
+    const fetchAppointments = async () => {
+        const ids = await fetchDocumentIds();
+        // Now fetch the appointments using the retrieved IDs
+        if (ids.length > 0) {
+            const fetchPromises = ids.map(async (id) => {
+                const docRef = doc(db, "record_history", id);
+                const docSnap = await getDoc(docRef);
+                return docSnap.exists() ? { id, ...docSnap.data() } : null;
+            });
+
+            const fetchedAppointments = await Promise.all(fetchPromises);
+            setAppointments(fetchedAppointments.filter(app => app));
+        }
+    };
+
+   
+
+    const fetchDocumentIds = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "record_history")); // Your collection name
+            const ids = querySnapshot.docs.map(doc => doc.id); // Extracting document IDs
+            return ids; // Return the array of IDs
+        } catch (error) {
+            console.error("Error fetching document IDs:", error);
+            return []; // Return an empty array on error
+        }
+    };
 
   const firebaseConfig = {
     apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
@@ -185,7 +239,7 @@ const ReportAndTalk = () => {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async() => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream
@@ -193,7 +247,23 @@ const ReportAndTalk = () => {
         .forEach((track) => track.stop());
       setRecording(false);
     }
-    Gemini(fulltranscript);
+    const gemini_response = await Gemini(fulltranscript);
+    console.log("gemi response: " + gemini_response);
+    await addDoc(collection(db, "record_history"), {
+        transcript: fulltranscript,
+        geminiResult: gemini_response, // Ensure this is the correct response
+        timestamp: new Date(),
+    });
+
+    //send transcript to firebase, get that documents id, throw it into the url.
+
+    
+
+    //clear the text and start a lodaing icno, say sending to gemini
+    setFullTranscript("");
+    setIsSendingDataToGemi(true);
+    fetchAppointments();
+
   };
 
   const toggleRecording = () => {
@@ -208,56 +278,134 @@ const ReportAndTalk = () => {
     <>
       <GlobalStyle />
       <PageContainer>
-        <Title>My Transcripts</Title>
-        <SearchBar>
-          <Search size={20} color="#666" />
-          <input type="text" placeholder="Search" />
-        </SearchBar>
-        <ContentContainer>
-          <AppointmentList>
-            {[1, 2, 3].map((num) => (
-              <AppointmentCard key={num} to={`/appointments`}>
-                <AppointmentTitle>Appointment {num}</AppointmentTitle>
-                <AppointmentDetail>
-                  <Calendar size={16} />
-                  {num === 1
-                    ? "Jan 18, 2024"
-                    : num === 2
-                    ? "May 19, 2024"
-                    : "Oct 18, 2024"}
-                </AppointmentDetail>
-                <AppointmentDetail>
-                  <Clock size={16} />
-                  {num === 1 ? "12:00 PM" : num === 2 ? "1:00 PM" : "2:00 PM"}
-                </AppointmentDetail>
-                <AppointmentDetail>
-                  <MapPin size={16} />
-                  UCLA Hospital
-                </AppointmentDetail>
-                <AppointmentDetail>
-                  <FileText size={16} />
-                  Reason:{" "}
-                  {num === 1
-                    ? "Abdominal Pain"
-                    : num === 2
-                    ? "Persistent Cough"
-                    : "Severe Headaches"}
-                </AppointmentDetail>
-              </AppointmentCard>
-            ))}
-          </AppointmentList>
-          <TranscribeBox>
-            <p>
-              Press the button to start transcribing your doctor appointments!
-            </p>
-            <TranscribeButton onClick={toggleRecording}>
-              <Mic size={24} color="white" />
-            </TranscribeButton>
-            <p>Transcribe</p>
-          </TranscribeBox>
-        </ContentContainer>
-      </PageContainer>
-    </>
+//         <Title>My Transcripts</Title>
+//         <SearchBar>
+//           <Search size={20} color="#666" />
+//           <input type="text" placeholder="Search" />
+//         </SearchBar>
+//         <ContentContainer>
+//           <AppointmentList>
+//             {[1, 2, 3].map((num) => (
+//               <AppointmentCard key={num} to={`/appointments`}>
+//                 <AppointmentTitle>Appointment {num}</AppointmentTitle>
+//                 <AppointmentDetail>
+//                   <Calendar size={16} />
+//                   {num === 1
+//                     ? "Jan 18, 2024"
+//                     : num === 2
+//                     ? "May 19, 2024"
+//                     : "Oct 18, 2024"}
+//                 </AppointmentDetail>
+//                 <AppointmentDetail>
+//                   <Clock size={16} />
+//                   {num === 1 ? "12:00 PM" : num === 2 ? "1:00 PM" : "2:00 PM"}
+//                 </AppointmentDetail>
+//                 <AppointmentDetail>
+//                   <MapPin size={16} />
+//                   UCLA Hospital
+//                 </AppointmentDetail>
+//                 <AppointmentDetail>
+//                   <FileText size={16} />
+//                   Reason:{" "}
+//                   {num === 1
+//                     ? "Abdominal Pain"
+//                     : num === 2
+//                     ? "Persistent Cough"
+//                     : "Severe Headaches"}
+//                 </AppointmentDetail>
+//               </AppointmentCard>
+//             ))}
+//           </AppointmentList>
+//           <TranscribeBox>
+//             <p>
+//               Press the button to start transcribing your doctor appointments!
+//             </p>
+//             <TranscribeButton onClick={toggleRecording}>
+//               <Mic size={24} color="white" />
+//             </TranscribeButton>
+//             <p>Transcribe</p>
+//           </TranscribeBox>
+//         </ContentContainer>
+//       </PageContainer>
+//     </>
+          <Title>My Transcripts</Title>
+          <SearchBar>
+              <Search size={20} color="#666" />
+              <input type="text" placeholder="Search" />
+          </SearchBar>
+
+          <AppointmentAndTranscribeContainer>
+            <AppointmentList>
+                        { appointments.map((appointment) => (
+                            <AppointmentItem key={appointment.id}>
+                                <Link to={`/appointments/${appointment.id}`}>
+                                    
+                                        <AppointmentTitle>
+                                            {appointment.title || "Appointment"} 
+                                        </AppointmentTitle>
+                                 
+                                </Link>
+                                <ul>
+                                    <li>Date: {appointment.date || "N/A"}</li>
+                                    <li>Time: {appointment.time || "N/A"}</li>
+                                    <li>Location: {appointment.location || "N/A"}</li>
+                                    <li>Reason for Appointment: {appointment.reason || "N/A"}</li>
+                                </ul>
+                             </AppointmentItem>
+                        )) }
+                    
+                        
+                    <AppointmentItem>
+                        <Link to="/appointments">
+                
+                            <AppointmentTitle>
+                            Appointment 2
+                            </AppointmentTitle>
+                       
+                        </Link>
+                        <ul>
+                            <li>Date: May 19, 2024</li>
+                            <li>Time: 1:00 PM</li>
+                            <li>Location: UCLA Hospital</li>
+                            <li>Reason for Appointment: Persistent Cough</li>
+                        </ul>
+                    </AppointmentItem>
+
+                    <AppointmentItem>
+                        <Link to="/appointments">
+           
+                            <AppointmentTitle>
+                            Appointment 3
+                            </AppointmentTitle>
+              
+                        </Link>
+                        <ul>
+                            <li>Date: Oct 18, 2024</li>
+                            <li>Time: 2:00 PM</li>
+                            <li>Location: UCLA Hospital</li>
+                            <li>Reason for Appointment: Severe Headaches</li>
+                        </ul>
+                    </AppointmentItem>
+                
+            </AppointmentList>
+
+            <TranscribeBox>
+              <p>
+                Press the button to start transcribing your doctor appointments!
+              </p>
+
+
+              {!isSendingDataToGemi ? fulltranscript : <p>loading</p>}
+
+              <TranscribeButton onClick={toggleRecording}>
+                <Mic size={24} />
+              </TranscribeButton>
+
+              <p>Transcribe</p>
+            </TranscribeBox>
+          </AppointmentAndTranscribeContainer>
+       
+    </PageContainer>
   );
 };
 

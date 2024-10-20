@@ -9,11 +9,10 @@ import ReportAndTalk from "./components/ReportAndTalk";
 import Appointment from "./components/appointments";
 import Login from "./components/Login"; // Import the Login component
 
+
 import { Link } from "react-router-dom";
 import FirstAppointment from "./components/FirstAppoitment";
-import SecondAppointment from "./components/SecondAppoitment";
-import ThirdAppointment from "./components/ThirdAppoitment";
-
+import SignUp from "./components/SignUp";
 import "./App.css";
 
 const App = () => {
@@ -28,11 +27,13 @@ const App = () => {
         <Route path="/report-and-talk" element={<ReportAndTalk />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/appointments/:id" element={<Appointment />} />
+        
         <Route path="/appointments" element={<Appointment />} />
-        <Route path="/appointments/1" element={<FirstAppointment />} />
-        <Route path="/appointments/2" element={<SecondAppointment />} />
-        <Route path="/appointments/3" element={<ThirdAppointment />} />
+
         <Route path="/login" element={<Login />} /> {/* Add this line */}
+        <Route path="/appointments/1" element={<FirstAppointment />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </Router>
   );
