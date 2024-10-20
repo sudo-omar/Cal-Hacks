@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Mic, Search, Calendar, Clock, MapPin, FileText } from "lucide-react";
 import { useRef } from "react";
@@ -8,6 +8,20 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Gemini from "./Gemini";
+
+import {
+    addDoc,
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    setDoc,
+} from 'firebase/firestore'
+    ;
+import Appointment from './appointments'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+import AppNavBar from "./AppNavBar";
 
 const PageContainer = styled.div`
     font-family: 'Arial', sans-serif;
@@ -110,90 +124,150 @@ const TranscribeButton = styled.button`
 `;
 
 const ReportAndTalk = () => {
-  const mediaRecorderRef = useRef(null);
-  const [recording, setRecording] = useState(false); // Recording state
-  const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
-  const [fulltranscript, setFullTranscript] = useState("");
+    const mediaRecorderRef = useRef(null);
+    const [recording, setRecording] = useState(false);
+    const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953');
+    const [fulltranscript, setFullTranscript] = useState('');
+    const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false);
+    const [appointments, setAppointments] = useState([]);
+    const[appointmentNum, setAppointmentNum] = useState(1);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
-    authDomain: "medicai-2ab57.firebaseapp.com",
-    projectId: "medicai-2ab57",
-    storageBucket: "medicai-2ab57.appspot.com",
-    messagingSenderId: "1010875331468",
-    appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
-  };
+    const firebaseConfig = {
+        apiKey: 'AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0',
+        authDomain: 'medicai-2ab57.firebaseapp.com',
+        projectId: 'medicai-2ab57',
+        storageBucket: 'medicai-2ab57.appspot.com',
+        messagingSenderId: '1010875331468',
+        appId: '1:1010875331468:web:bed2564ccd919dd72edca9',
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const startRecording = async () => {
-    try {
-      // Get audio stream from user's microphone
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+    useEffect(() => {
+        fetchAppointments();
+    }, []);
 
-      // Create a live transcription connection
-      const connection = deepgram.listen.live({
-        model: "nova-2",
-        language: "en-US",
-        smart_format: true,
-      });
+    const fetchAppointments = async () => {
+        const ids = await fetchDocumentIds();
+        // Now fetch the appointments using the retrieved IDs
+        if (ids.length > 0) {
+            const fetchPromises = ids.map(async (id) => {
+                const docRef = doc(db, 'record_history', id);
+                const docSnap = await getDoc(docRef);
+                return docSnap.exists() ? { id, ...docSnap.data() } : null;
+            });
 
-      // Listen for transcription events
-      connection.on(LiveTranscriptionEvents.Open, () => {
-        console.log("Connection opened");
-
-        connection.on(LiveTranscriptionEvents.Transcript, (data) => {
-          const newTranscript = data.channel.alternatives[0].transcript; // Get the new transcript
-          setFullTranscript(
-            (prevTranscript) => prevTranscript + " " + newTranscript
-          );
-        });
-
-        connection.on(LiveTranscriptionEvents.Error, (err) => {
-          console.error(err);
-        });
-      });
-
-      // When data is available, send it to Deepgram
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          connection.send(event.data); // Send the audio data
+            const fetchedAppointments = await Promise.all(fetchPromises);
+            setAppointments(fetchedAppointments.filter((app) => app));
         }
-      };
+    };
 
-      // Start recording
-      mediaRecorderRef.current.start(250); // Send audio every 250 ms
-      setRecording(true); // Update state to indicate recording has started
-    } catch (error) {
-      console.error(
-        "Error accessing microphone or Deepgram connection:",
-        error
-      );
-    }
-  };
+    const fetchDocumentIds = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'record_history')); // Your collection name
+            const ids = querySnapshot.docs.map((doc) => doc.id); // Extracting document IDs
+            return ids; // Return the array of IDs
+        } catch (error) {
+            console.error('Error fetching document IDs:', error);
+            return []; // Return an empty array on error
+        }
+    };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop(); // Stop the recording
-      mediaRecorderRef.current.stream
-        .getTracks()
-        .forEach((track) => track.stop()); // Stop all audio tracks
-      setRecording(false); // Update state to indicate recording has stopped
-    }
-    Gemini(fulltranscript);
-  };
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
 
-  const toggleRecording = () => {
-    if (recording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  };
-  return (
+            const connection = deepgram.listen.live({
+                model: 'nova-2',
+                language: 'en-US',
+                smart_format: true,
+            });
+
+            connection.on(LiveTranscriptionEvents.Open, () => {
+                console.log('Connection opened');
+
+                connection.on(LiveTranscriptionEvents.Transcript, (data) => {
+                    const newTranscript = data.channel.alternatives[0].transcript;
+                    setFullTranscript(
+                        (prevTranscript) => prevTranscript + ' ' + newTranscript
+                    );
+                });
+
+                connection.on(LiveTranscriptionEvents.Error, (err) => {
+                    console.error(err);
+                });
+            });
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    connection.send(event.data);
+                }
+            };
+
+            mediaRecorderRef.current.start(250);
+            setRecording(true);
+        } catch (error) {
+            console.error(
+                'Error accessing microphone or Deepgram connection:',
+                error
+            );
+        }
+    };
+
+    const stopRecording = async () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream
+                .getTracks()
+                .forEach((track) => track.stop());
+            setRecording(false);
+        }
+
+        const gemini_response = await Gemini(fulltranscript);
+        console.log('gemi response: ' + gemini_response);
+
+        let parsedResponse;
+        if (typeof gemini_response === 'string') {
+            try {
+                parsedResponse = JSON.parse(gemini_response);
+                console.log('parsed response: ' + parsedResponse);
+            } catch (error) {
+                console.log('Error parsing Gemini response:');
+                return; // Exit the function if parsing fails
+            }
+        } else {
+            parsedResponse = gemini_response;
+        }
+
+        console.log(`Gemini response:`, parsedResponse);
+
+        await addDoc(collection(db, 'record_history'), {
+            transcript: fulltranscript,
+            geminiResult: parsedResponse,
+            timestamp: new Date(),
+            title: 'Appointment ' + appointmentNum,
+        });
+
+        setAppointmentNum(appointmentNum + 1);
+        setFullTranscript('');
+        setIsSendingDataToGemi(true);
+        fetchAppointments();
+    };
+
+    const toggleRecording = () => {
+        if (recording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    };
+
+    return (
+        <>
+            <AppNavBar />
       <PageContainer>
           <Title>My Transcripts</Title>
           <SearchBar>
@@ -202,26 +276,20 @@ const ReportAndTalk = () => {
           </SearchBar>
           <ContentContainer>
               <AppointmentList>
-                  {[1, 2, 3].map((num) => (
-                      <AppointmentCard key={num}>
-                          <Link to={`/appointments`}>
-                          <AppointmentTitle>Appointment {num}</AppointmentTitle>
+                  {appointments.map((appointment) => (
+                      <AppointmentCard key={appointment.id}>
+                          <Link to={`/appointments/${appointment.id}`}>
+                          <AppointmentTitle>
+                              {appointment.title || 'Appointment'}
+                          </AppointmentTitle>
                           </Link>
                           <AppointmentDetail>
                               <Calendar size={16} />
-                              {num === 1 ? "Jan 18, 2024" : num === 2 ? "May 19, 2024" : "Oct 18, 2024"}
-                          </AppointmentDetail>
-                          <AppointmentDetail>
-                              <Clock size={16} />
-                              {num === 1 ? "12:00 PM" : num === 2 ? "1:00 PM" : "2:00 PM"}
-                          </AppointmentDetail>
-                          <AppointmentDetail>
-                              <MapPin size={16} />
-                              UCLA Hospital
-                          </AppointmentDetail>
+                              Date &#38; Time: {appointment.timestamp ? appointment.timestamp.toDate().toLocaleString() : 'N/A'}
+                              </AppointmentDetail>
                           <AppointmentDetail>
                               <FileText size={16} />
-                              Reason: {num === 1 ? "Abdominal Pain" : num === 2 ? "Persistent Cough" : "Severe Headaches"}
+                              Reason for Appointment: {appointment.geminiResult.main_complaint || 'N/A'}
                           </AppointmentDetail>
                       </AppointmentCard>
                   ))}
@@ -235,6 +303,7 @@ const ReportAndTalk = () => {
               </TranscribeBox>
           </ContentContainer>
       </PageContainer>
+        </>
   );
 };
 

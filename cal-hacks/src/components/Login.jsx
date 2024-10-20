@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Eye, ArrowRightCircle } from "lucide-react";
 import GoogleIcon from '@mui/icons-material/Google';
 import Spline from '@splinetool/react-spline';
+import App from "../App";
+import AppNavBar from "./AppNavBar";
 
 const PageContainer = styled.div`
   display: flex;
@@ -114,6 +116,7 @@ const IconWrapper = styled.span`
 const Login = () => {
   return (
       <>
+        <AppNavBar />
     <PageContainer>
       <LoginContainer>
         <Header>

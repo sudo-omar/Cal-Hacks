@@ -18,8 +18,8 @@ const RightNav = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    gap: 40px;
     align-items: center;
+    gap: 40px;
     width: 50%;
     margin-right: 2%;
 `;
@@ -73,11 +73,8 @@ const Navbar = () => {
                 </a>
             </div>
             <RightNav>
-                <MenuOption onClick={() => {window.location.replace("/")}}>Home</MenuOption>
-                <MenuOption>About</MenuOption> {/* Dead link */}
-                <MenuOption>Contact</MenuOption> {/* Dead link */}
-                <MenuOption onClick={() => {window.location.replace("/login")}}>Login</MenuOption>
-                <SignUpButton onClick={() => {window.location.replace("/report-and-talk")}}>Sign Up</SignUpButton>
+                <MenuOption onClick={() => {window.location.replace("/report-and-talk")}}>Appointments</MenuOption>
+                <SignUpButton onClick={() => {window.location.replace("/")}}>Sign Out</SignUpButton>
             </RightNav>
         </Container>
     )

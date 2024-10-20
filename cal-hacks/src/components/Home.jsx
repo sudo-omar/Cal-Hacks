@@ -2,9 +2,12 @@ import React from 'react';
 import Spline from '@splinetool/react-spline';
 import styled from 'styled-components';
 import { Activity, Lock, Smartphone } from 'lucide-react';
+import Navbar from "./Navbar";
 
 export default function Home() {
     return (
+        <>
+            <Navbar />
         <Container>
             <Content>
                 <LeftNav>
@@ -38,6 +41,7 @@ export default function Home() {
                 </RightNav>
             </Content>
         </Container>
+            </>
     );
 }
 
