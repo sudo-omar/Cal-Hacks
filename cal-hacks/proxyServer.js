@@ -78,7 +78,7 @@ app.post('/transcribe', async (req, res) => {
             return res.status(400).send('No audio buffer provided.');
         }
 
-        const response = await axios.post('https://api.deepgram.com/v1/listen', audioBuffer, {
+        const response = await axios.post('https://api.deepgram.com/v1/listen?model=nova-2-medical', audioBuffer, {
             headers: {
                 'Authorization': `Token ${DEEPGRAM_API_KEY}`,
                 'Content-Type': 'audio/wav',

@@ -22,38 +22,6 @@ const SpeechAI = () => {
         const [isRecording, setIsRecording] = useState(false);
         const [mediaRecorder, setMediaRecorder] = useState(null);
 
-        const blobToUint8Array = (blob) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    if (reader.error) {
-                        reject(reader.error);
-                    } else {
-                        resolve(new Uint8Array(reader.result));
-                    }
-                };
-                reader.readAsArrayBuffer(blob);
-            });
-        };
-
-        const convertAudio = (audioData) => {
-            const audioDataView = new Int16Array(audioData);
-
-            if (audioDataView.length === 0) {
-                console.error("Received audio data is empty.");
-                return;
-            }
-
-            const audioContext = new (window.AudioContext)({ latencyHint: "interactive", sampleRate: 48000 });
-            const audioBuffer = audioContext.createBuffer(1, audioDataView.length, 48000);
-            const audioBufferChannel = audioBuffer.getChannelData(0);
-
-            for (let i = 0; i < audioDataView.length; i++) {
-                audioBufferChannel[i] = audioDataView[i] / 32768;
-            }
-            return audioBufferChannel;
-        };
-
         const startWebSocket = () => {
             console.log('WebSocket connecting');
             socketRef.current = new WebSocket(url);
