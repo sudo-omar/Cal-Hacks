@@ -18,6 +18,11 @@ const PageContainer = styled.div`
     background-color: #f5f7fa;
 `;
 
+const AppointmentAndTranscribeContainer = styled.div`
+  display: flex;
+  gap: 20px;
+`;
+
 const Title = styled.h1`
     font-size: 32px;
     margin-bottom: 20px;
@@ -49,6 +54,12 @@ const ContentContainer = styled.div`
 
 const AppointmentList = styled.div`
     flex: 1;
+`;
+
+const AppointmentItem = styled.div`
+  background-color: #d9d9d9;
+  padding: 20px;
+  border-radius: 4px;
 `;
 
 const AppointmentCard = styled.div`
@@ -257,11 +268,11 @@ const ReportAndTalk = () => {
                         { appointments.map((appointment) => (
                             <AppointmentItem key={appointment.id}>
                                 <Link to={`/appointments/${appointment.id}`}>
-                                    <AppointmentHeader>
+                                    
                                         <AppointmentTitle>
                                             {appointment.title || "Appointment"} 
                                         </AppointmentTitle>
-                                    </AppointmentHeader>
+                                 
                                 </Link>
                                 <ul>
                                     <li>Date: {appointment.date || "N/A"}</li>
@@ -275,11 +286,11 @@ const ReportAndTalk = () => {
                         
                     <AppointmentItem>
                         <Link to="/appointments">
-                        <AppointmentHeader>
+                
                             <AppointmentTitle>
                             Appointment 2
                             </AppointmentTitle>
-                        </AppointmentHeader>
+                       
                         </Link>
                         <ul>
                             <li>Date: May 19, 2024</li>
@@ -291,11 +302,11 @@ const ReportAndTalk = () => {
 
                     <AppointmentItem>
                         <Link to="/appointments">
-                        <AppointmentHeader>
+           
                             <AppointmentTitle>
                             Appointment 3
                             </AppointmentTitle>
-                        </AppointmentHeader>
+              
                         </Link>
                         <ul>
                             <li>Date: Oct 18, 2024</li>
