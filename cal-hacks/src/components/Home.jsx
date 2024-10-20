@@ -31,7 +31,7 @@ export default function Home() {
                             <p>Access your data on any device, anytime.</p>
                         </FeatureInfo>
                     </FeatureBox>
-                    <CTAButton>Start Your Health Journey</CTAButton>
+                    <CTAButton onClick={() => {window.location.replace("/login")}}>Start Your Health Journey</CTAButton>
                 </LeftNav>
                 <RightNav>
                     <Spline scene="https://prod.spline.design/AqhHEmAGLPDY4H1s/scene.splinecode"/>

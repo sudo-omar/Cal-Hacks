@@ -8,7 +8,7 @@ import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
 import {createClient, LiveTranscriptionEvents} from "@deepgram/sdk";
 
-const simli_faceid = '95708b15-bcb8-4d40-a4c5-b233778858b4';
+const simli_faceid = "148efaa3-0224-490d-ab77-2a026f4e6738";
 const simliClient = new SimliClient();
 
 const TranscribeButton = styled.button`
@@ -206,7 +206,6 @@ const SpeechAI = () => {
         }
         toggleRecording();
         setIsStart(!isStart);
-
     };
 
     return (
