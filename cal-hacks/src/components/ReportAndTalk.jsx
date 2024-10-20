@@ -1,12 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled, { createGlobalStyle } from "styled-components";
-import { Mic, Search, Calendar, Clock, MapPin, FileText } from "lucide-react";
-import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { Link } from "react-router-dom";
-import Gemini from "./Gemini";
-import { addDoc, collection, getDocs, doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useRef, useState } from 'react';
+import styled, { createGlobalStyle } from 'styled-components';
+import { Mic, Search, Calendar, Clock, MapPin, FileText } from 'lucide-react';
+import { createClient, LiveTranscriptionEvents } from '@deepgram/sdk';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
+import Gemini from './Gemini';
+import {
+  addDoc,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+} from 'firebase/firestore';
+import Appointment from './appointments'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -18,7 +27,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const PageContainer = styled.div`
-  font-family: "Arial", sans-serif;
+  font-family: 'Arial', sans-serif;
   max-width: 1200px;
   margin: 0 auto;
   padding: 4% 20px;
@@ -81,12 +90,12 @@ const AppointmentItem = styled.div`
 `;
 
 const AppointmentCard = styled.div`
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
 
   &:hover {
     transform: translateY(-5px);
@@ -147,55 +156,54 @@ const TranscribeButton = styled.button`
 const ReportAndTalk = () => {
   const mediaRecorderRef = useRef(null);
   const [recording, setRecording] = useState(false);
-  const deepgram = createClient("55e40a026dc89525f4d2b118ffecd3c674837953");
-  const [fulltranscript, setFullTranscript] = useState("");
-  const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false)
+  const deepgram = createClient('55e40a026dc89525f4d2b118ffecd3c674837953');
+  const [fulltranscript, setFullTranscript] = useState('');
+  const [isSendingDataToGemi, setIsSendingDataToGemi] = useState(false);
   const [appointments, setAppointments] = useState([]);
-
-    useEffect(() => {
-        fetchAppointments();
-    }, []);
-
-    const fetchAppointments = async () => {
-        const ids = await fetchDocumentIds();
-        // Now fetch the appointments using the retrieved IDs
-        if (ids.length > 0) {
-            const fetchPromises = ids.map(async (id) => {
-                const docRef = doc(db, "record_history", id);
-                const docSnap = await getDoc(docRef);
-                return docSnap.exists() ? { id, ...docSnap.data() } : null;
-            });
-
-            const fetchedAppointments = await Promise.all(fetchPromises);
-            setAppointments(fetchedAppointments.filter(app => app));
-        }
-    };
-
-   
-
-    const fetchDocumentIds = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, "record_history")); // Your collection name
-            const ids = querySnapshot.docs.map(doc => doc.id); // Extracting document IDs
-            return ids; // Return the array of IDs
-        } catch (error) {
-            console.error("Error fetching document IDs:", error);
-            return []; // Return an empty array on error
-        }
-    };
+  const[appointmentNum, setAppointmentNum] = useState(1);
 
   const firebaseConfig = {
-    apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
-    authDomain: "medicai-2ab57.firebaseapp.com",
-    projectId: "medicai-2ab57",
-    storageBucket: "medicai-2ab57.appspot.com",
-    messagingSenderId: "1010875331468",
-    appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
+    apiKey: 'AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0',
+    authDomain: 'medicai-2ab57.firebaseapp.com',
+    projectId: 'medicai-2ab57',
+    storageBucket: 'medicai-2ab57.appspot.com',
+    messagingSenderId: '1010875331468',
+    appId: '1:1010875331468:web:bed2564ccd919dd72edca9',
   };
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    const ids = await fetchDocumentIds();
+    // Now fetch the appointments using the retrieved IDs
+    if (ids.length > 0) {
+      const fetchPromises = ids.map(async (id) => {
+        const docRef = doc(db, 'record_history', id);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? { id, ...docSnap.data() } : null;
+      });
+
+      const fetchedAppointments = await Promise.all(fetchPromises);
+      setAppointments(fetchedAppointments.filter((app) => app));
+    }
+  };
+
+  const fetchDocumentIds = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'record_history')); // Your collection name
+      const ids = querySnapshot.docs.map((doc) => doc.id); // Extracting document IDs
+      return ids; // Return the array of IDs
+    } catch (error) {
+      console.error('Error fetching document IDs:', error);
+      return []; // Return an empty array on error
+    }
+  };
 
   const startRecording = async () => {
     try {
@@ -203,18 +211,18 @@ const ReportAndTalk = () => {
       mediaRecorderRef.current = new MediaRecorder(stream);
 
       const connection = deepgram.listen.live({
-        model: "nova-2",
-        language: "en-US",
+        model: 'nova-2',
+        language: 'en-US',
         smart_format: true,
       });
 
       connection.on(LiveTranscriptionEvents.Open, () => {
-        console.log("Connection opened");
+        console.log('Connection opened');
 
         connection.on(LiveTranscriptionEvents.Transcript, (data) => {
           const newTranscript = data.channel.alternatives[0].transcript;
           setFullTranscript(
-            (prevTranscript) => prevTranscript + " " + newTranscript
+            (prevTranscript) => prevTranscript + ' ' + newTranscript
           );
         });
 
@@ -233,13 +241,13 @@ const ReportAndTalk = () => {
       setRecording(true);
     } catch (error) {
       console.error(
-        "Error accessing microphone or Deepgram connection:",
+        'Error accessing microphone or Deepgram connection:',
         error
       );
     }
   };
 
-  const stopRecording = async() => {
+  const stopRecording = async () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream
@@ -247,23 +255,36 @@ const ReportAndTalk = () => {
         .forEach((track) => track.stop());
       setRecording(false);
     }
+
     const gemini_response = await Gemini(fulltranscript);
-    console.log("gemi response: " + gemini_response);
-    await addDoc(collection(db, "record_history"), {
-        transcript: fulltranscript,
-        geminiResult: gemini_response, // Ensure this is the correct response
-        timestamp: new Date(),
+    console.log('gemi response: ' + gemini_response);
+
+    let parsedResponse;
+    if (typeof gemini_response === 'string') {
+      try {
+        parsedResponse = JSON.parse(gemini_response);
+        console.log('parsed response: ' + parsedResponse);
+      } catch (error) {
+        console.log('Error parsing Gemini response:');
+        return; // Exit the function if parsing fails
+      }
+    } else {
+      parsedResponse = gemini_response;
+    }
+
+    console.log(`Gemini response:`, parsedResponse);
+
+    await addDoc(collection(db, 'record_history'), {
+      transcript: fulltranscript,
+      geminiResult: parsedResponse, 
+      timestamp: new Date(),
+      title: 'Appointment ' + appointmentNum,
     });
 
-    //send transcript to firebase, get that documents id, throw it into the url.
-
-    
-
-    //clear the text and start a lodaing icno, say sending to gemini
-    setFullTranscript("");
+    setAppointmentNum(appointmentNum + 1);
+    setFullTranscript('');
     setIsSendingDataToGemi(true);
     fetchAppointments();
-
   };
 
   const toggleRecording = () => {
@@ -275,7 +296,7 @@ const ReportAndTalk = () => {
   };
 
   return (
-      <div>
+    <div>
       {/* <GlobalStyle />
       <PageContainer>
         <Title>My Transcripts</Title>
@@ -328,34 +349,30 @@ const ReportAndTalk = () => {
         </ContentContainer>
       </PageContainer>
   //     </> */}
-          <Title>My Transcripts</Title>
-          <SearchBar>
-              <Search size={20} color="#666" />
-              <input type="text" placeholder="Search" />
-          </SearchBar>
+  {/* <Route path="/appointments/:id" component={appointments} /> */}
+      <Title>My Transcripts</Title>
+      <SearchBar>
+        <Search size={20} color="#666" />
+        <input type="text" placeholder="Search" />
+      </SearchBar>
 
-          <AppointmentAndTranscribeContainer>
-            <AppointmentList>
-                        { appointments.map((appointment) => (
-                            <AppointmentItem key={appointment.id}>
-                                <Link to={`/appointments/${appointment.id}`}>
-                                    
-                                        <AppointmentTitle>
-                                            {appointment.title || "Appointment"} 
-                                        </AppointmentTitle>
-                                 
-                                </Link>
-                                <ul>
-                                    <li>Date: {appointment.date || "N/A"}</li>
-                                    <li>Time: {appointment.time || "N/A"}</li>
-                                    <li>Location: {appointment.location || "N/A"}</li>
-                                    <li>Reason for Appointment: {appointment.reason || "N/A"}</li>
-                                </ul>
-                             </AppointmentItem>
-                        )) }
-                    
-                        
-                    <AppointmentItem>
+      <AppointmentAndTranscribeContainer>
+        <AppointmentList>
+          {appointments.map((appointment) => (
+            <AppointmentItem key={appointment.id}>
+              <Link to={`/appointments/${appointment.id}`}>
+                <AppointmentTitle>
+                  {appointment.title || 'Appointment'}
+                </AppointmentTitle>
+              </Link>
+              <ul>
+                <li>Time Stamp: {appointment.timestamp ? appointment.timestamp.toDate().toLocaleString() : 'N/A'}</li>
+                <li>Reason for Appointment: {appointment.geminiResult.main_complaint || 'N/A'}</li>
+              </ul>
+            </AppointmentItem>
+          ))}
+
+          {/* <AppointmentItem>
                         <Link to="/appointments">
                 
                             <AppointmentTitle>
@@ -369,9 +386,9 @@ const ReportAndTalk = () => {
                             <li>Location: UCLA Hospital</li>
                             <li>Reason for Appointment: Persistent Cough</li>
                         </ul>
-                    </AppointmentItem>
+                    </AppointmentItem> */}
 
-                    <AppointmentItem>
+          {/* <AppointmentItem>
                         <Link to="/appointments">
            
                             <AppointmentTitle>
@@ -385,27 +402,24 @@ const ReportAndTalk = () => {
                             <li>Location: UCLA Hospital</li>
                             <li>Reason for Appointment: Severe Headaches</li>
                         </ul>
-                    </AppointmentItem>
-                
-            </AppointmentList>
+                    </AppointmentItem> */}
+        </AppointmentList>
 
-            <TranscribeBox>
-              <p>
-                Press the button to start transcribing your doctor appointments!
-              </p>
+        <TranscribeBox>
+          <p>
+            Press the button to start transcribing your doctor appointments!
+          </p>
 
+          {!isSendingDataToGemi ? fulltranscript : <p>loading</p>}
 
-              {!isSendingDataToGemi ? fulltranscript : <p>loading</p>}
+          <TranscribeButton onClick={toggleRecording}>
+            <Mic size={24} />
+          </TranscribeButton>
 
-              <TranscribeButton onClick={toggleRecording}>
-                <Mic size={24} />
-              </TranscribeButton>
-
-              <p>Transcribe</p>
-            </TranscribeBox>
-          </AppointmentAndTranscribeContainer>
-      </div>
-       
+          <p>Transcribe</p>
+        </TranscribeBox>
+      </AppointmentAndTranscribeContainer>
+    </div>
   );
 };
 
