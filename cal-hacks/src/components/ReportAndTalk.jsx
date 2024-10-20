@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { Search, Mic } from "lucide-react";
+import { Mic, Search, Calendar, Clock, MapPin, FileText } from "lucide-react";
 import { useRef } from "react";
 import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
@@ -11,95 +11,103 @@ import Gemini from "./Gemini";
 import { addDoc, collection, getDocs, doc, getDoc } from "firebase/firestore";
 
 const PageContainer = styled.div`
-  font-family: Arial, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 8% 20px;
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  gap: 20px;
-`;
-
-const MainColumn = styled.div`
-  flex: 1;
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4% 20px;
+    background-color: #f5f7fa;
 `;
 
 const Title = styled.h1`
-  font-size: 32px;
-  margin-bottom: 20px;
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #333;
 `;
 
 const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 25px;
-  margin-bottom: 20px;
-  width: 34%;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 24px;
+    padding: 10px 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    input {
+        border: none;
+        outline: none;
+        font-size: 16px;
+        width: 100%;
+        margin-left: 10px;
+    }
 `;
 
-const SearchInput = styled.input`
-  border: none;
-  background: transparent;
-  flex-grow: 1;
-  font-size: 16px;
-  margin-left: 10px;
-    outline: none;
-`;
-
-const AppointmentAndTranscribeContainer = styled.div`
-  display: flex;
-  gap: 20px;
+const ContentContainer = styled.div`
+    display: flex;
+    gap: 30px;
 `;
 
 const AppointmentList = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    flex: 1;
 `;
 
-const AppointmentItem = styled.div`
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 4px;
-`;
+const AppointmentCard = styled.div`
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 
-const AppointmentHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    &:hover {
+        transform: translateY(-5px);
+    }
 `;
 
 const AppointmentTitle = styled.h2`
-  font-size: 18px;
-  margin: 0;
+    font-size: 20px;
+    color: #4a90e2;
+    margin-bottom: 10px;
+`;
+
+const AppointmentDetail = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    color: #666;
+
+    svg {
+        margin-right: 10px;
+    }
 `;
 
 const TranscribeBox = styled.div`
-  flex: 0 0 300px;
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 20px;
-  height: fit-content;
-  text-align: center;
+    flex: 0 0 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    height: fit-content;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const TranscribeButton = styled.button`
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px auto;
-  cursor: pointer;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #3a7bd5;
+    }
 `;
 
 const ReportAndTalk = () => {
@@ -156,7 +164,6 @@ const ReportAndTalk = () => {
   const db = getFirestore(app);
 
   const startRecording = async () => {
-    setIsSendingDataToGemi(false);
     try {
       // Get audio stream from user's microphone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -238,14 +245,11 @@ const ReportAndTalk = () => {
     }
   };
   return (
-    <PageContainer>
-      <ContentContainer>
-        <MainColumn>
+      <PageContainer>
           <Title>My Transcripts</Title>
-
           <SearchBar>
-            <Search size={20}/>
-            <SearchInput placeholder="Search" />
+              <Search size={20} color="#666" />
+              <input type="text" placeholder="Search" />
           </SearchBar>
 
           <AppointmentAndTranscribeContainer>
@@ -318,8 +322,7 @@ const ReportAndTalk = () => {
               <p>Transcribe</p>
             </TranscribeBox>
           </AppointmentAndTranscribeContainer>
-        </MainColumn>
-      </ContentContainer>
+       
     </PageContainer>
   );
 };
