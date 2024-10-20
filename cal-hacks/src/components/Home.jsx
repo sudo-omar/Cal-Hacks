@@ -1,7 +1,7 @@
-import React from 'react';
-import Spline from '@splinetool/react-spline';
-import styled from 'styled-components';
-import { Activity, Lock, Smartphone } from 'lucide-react';
+import React from "react";
+import Spline from "@splinetool/react-spline";
+import styled from "styled-components";
+import { Activity, Lock, Smartphone } from "lucide-react";
 
 export default function Home() {
     return (
@@ -42,95 +42,97 @@ export default function Home() {
 }
 
 const Container = styled.div`
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 `;
 
 const Content = styled.div`
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-    padding: 0 0 0 5%;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 0 0 5%;
 
-    h1 {
-        font-size: 5rem;
-        margin-bottom: 0.5rem;
-        color: #4A90E2;
-    }
+  h1 {
+    font-size: 5rem;
+    margin-bottom: 0.5rem;
+    color: #4a90e2;
+  }
 `;
 
 const Tagline = styled.h2`
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 2rem;
 `;
 
 const LeftNav = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 50%;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  height: 100vh;
+  padding-left: 10%;
 `;
 
 const RightNav = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100vh;
 `;
 
 const FeatureBox = styled.div`
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width: 80%;
+  transition: transform 0.2s, box-shadow 0.2s;
 
-    &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const FeatureIcon = styled.div`
-    margin-right: 1rem;
-    color: #4A90E2;
+  margin-right: 1rem;
+  color: #4a90e2;
 `;
 
 const FeatureInfo = styled.div`
-    h3 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
-    }
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
 
-    p {
-        margin: 0;
-        color: #666;
-    }
+  p {
+    margin: 0;
+    color: #666;
+  }
 `;
 
 const CTAButton = styled.button`
-    background-color: #A784D9;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 2rem;
-    width: 50%;
-    &:hover {
-        background-color: #8469ac;
-    }
+  background-color: #a784d9;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 2rem;
+  width: 50%;
+  &:hover {
+    background-color: #8469ac;
+  }
 `;
