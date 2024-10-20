@@ -1,25 +1,5 @@
-<<<<<<< HEAD
-const SignUp = () => {
-  const {googleSignIn} = UserAuth();
-
-  const handleSignIn = async () => {
-    try {
-      await googleSignIn();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-    return (
-        <div onClick={handleSignIn}>
-            logofcases
-        </div>
-    )
-}
-=======
 import React, { useState } from "react";
 import styled from "styled-components";
->>>>>>> 9d71a6a9e06b9deceb008665f1c2ec13e96974f5
 
 const Container = styled.div`
   display: flex;
