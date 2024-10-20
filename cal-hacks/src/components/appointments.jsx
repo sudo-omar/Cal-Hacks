@@ -4,10 +4,10 @@ import { Mic } from "lucide-react";
 import { useRef } from "react";
 import { useState } from "react";
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { db } from "./firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -130,18 +130,9 @@ const Appointment = () => {
     const [jsonGemini, setJsonGemini] = useState("");
     const [transcriptText, setTranscriptText] = useState("");
     const [activeTab, setActiveTab] = useState("summary");
- 
+    const [appointmentData, setAppointmentData] = useState(null);
 
-    
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBqKvxFvmwfr_u2Bq9uS-qg-NGNGKkeCF0",
-        authDomain: "medicai-2ab57.firebaseapp.com",
-        projectId: "medicai-2ab57",
-        storageBucket: "medicai-2ab57.appspot.com",
-        messagingSenderId: "1010875331468",
-        appId: "1:1010875331468:web:bed2564ccd919dd72edca9",
-    };
+    console.log("ID from params:", id);
 
     // Initialize Firebase
     // const app = initializeApp(firebaseConfig);
@@ -235,9 +226,69 @@ const Appointment = () => {
     //     }
     // };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+//set the data in firestore
+useEffect(() => {
+    const fetchData = async () => {
+        console.log("Fetching data from Firestore...");
+        try {
+            const docRef = doc(db, 'record_history', id); // Adjust collection name as needed
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                console.log("Document snapshot exists");
+                const geminiResult = docSnap.data().geminiResult; // Get the geminiResult directly
+
+                if (typeof geminiResult === 'string') {
+                    // Only parse if it's a string
+                    try {
+                        console.log("geminiResult before parsing:", geminiResult);
+                        const parsedJson = JSON.parse(geminiResult);
+                        console.log("Parsed JSON:", parsedJson);
+                        setJsonGemini(parsedJson);
+                    } catch (parseError) {
+                        console.error("Error parsing JSON:", parseError);
+                        setJsonGemini(null); // Handle the error gracefully
+                        console.error("Original string:", geminiResult);
+                    }
+                } else {
+                    // If it's already an object, set it directly
+                    setJsonGemini(geminiResult);
+                }
+
+                // Do not set the transcript here
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
+            console.error("Error fetching document:", error);
+        }
+    };
+
+    fetchData(); // Call the async function
+}, [db, id]);
+
+
+    // //grab the data for this id
+    // useEffect(() => {
+    //     const fetchAppointment = async () => {
+    //         console.log("ID from params:", id);
+    //         try {
+    //             const docRef = doc(db, 'appointments', id);
+    //             const docSnap = await getDoc(docRef);
+                
+    //             if (docSnap.exists()) {
+    //                 console.log('Document data:', docSnap.data());
+    //                 setAppointmentData(docSnap.data());
+    //             } else {
+    //                 console.error('No such document!');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching appointment:', error);
+    //         }
+    //     };
+
+    //     fetchAppointment();
+    // }, [id]);
 
   const startRecording = async () => {
     try {
@@ -308,8 +359,8 @@ const Appointment = () => {
         <PageContainer>
     <ContentContainer>
         <MainColumn>
-            <Title>Appointment 1</Title>
-            <Date>Oct 18, 2024 12:00 PM</Date>
+            <Title>{appointmentData?.title  || 'na'}</Title>
+            <Date>{appointmentData?.timestamp.toDate().toLocaleString() || 'na'}</Date>
             <AppointmentAndTranscribeContainer>
                 <AppointmentList>
                     <Selection>
@@ -334,18 +385,18 @@ const Appointment = () => {
                             <>
                                 <h3>Main Complaint:</h3>
                                 <p>{}</p>
-                                <p>{jsonGemini.main_complaint || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult.main_complaint || "N/A"}</p>
                                 
                                 <h3>General Summary:</h3>
-                                <p>{jsonGemini.general_summary || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult.summary || "N/A"}</p>
                                 <p></p>
 
                                 <h3>Definitions:</h3>
-                                <p>{jsonGemini.definitions || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult.definitions || "N/A"}</p>
                                 <p></p>
 
                                 <h3>Prescriptions:</h3>
-                                <p>{jsonGemini.prescriptions || "N/A"}</p>
+                                <p>{appointmentData?.geminiResult.prescriptions || "N/A"}</p>
                                 <p></p>
 
                             </>
@@ -353,7 +404,7 @@ const Appointment = () => {
                             <>
                                 <h3>Transcript:</h3>
                                 
-                                <p>{transcriptText || "N/A"}</p>
+                                <p>{appointmentData?.transcript || "N/A"}</p>
                             </>
                         )}
                     </AppointmentItem>
