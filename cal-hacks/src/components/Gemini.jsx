@@ -33,8 +33,6 @@ export const Gemini = (param) => {
 
   async function createSummary() {
     try {
-      
-
       const result = await model.generateContent(prompt);
       return result.response.text();
     } catch (error) {
